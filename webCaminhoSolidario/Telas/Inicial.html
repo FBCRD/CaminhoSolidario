@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caminho Solidário</title>
+  <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body class="bodyteste">
+  <div class="logo">
+    <!-- Substituir pelo seu logo -->
+    <img src="/imgs/logo.png" alt="Logo Caminho Solidário">
+  </div>
+
+
+  <div class="form-container">
+    <h2>Entre</h2>
+    <form id="formUsuario">
+      <div>
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome" required>
+      </div>
+      <div>
+        <label for="nome">Turma:</label><br>
+        <input type="text" id="turma" name="turma" placeholder="Digite sua turma">
+      </div>
+      <div>
+        <label for="idade">Idade:</label><br>
+        <input type="number" id="idade" name="idade" placeholder="Digite sua idade">
+      </div>
+      <div style="text-align: center;">
+        <button id="cmcbtn" type="submit">Começar</button>
+      </div>
+    </form>
+  </div>
+
+
+  <div class="morango-container">
+    <div class="fala">
+      Oi eu sou a Manu e guiar você nessa jornada!
+      <br>Coloque seu nome e idade para começarmos.
+      <br>Vamos lá?
+    </div>
+    <div class="morango">
+      <!-- Substituir pelo seu morango -->
+      <img src="/imgs/Manuzinha.png" alt="Morango Guia">
+    </div>
+  </div>
+
+
+
+
+  <footer>
+    <img class="marista" src="/imgs/marista.png" alt="" srcset="">
+  </footer>
+
+  <script type="module">
+    // Importa o Firebase e Firestore
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+
+
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
+      authDomain: "caminhosolidario-49761.firebaseapp.com",
+      projectId: "caminhosolidario-49761",
+      storageBucket: "caminhosolidario-49761.firebasestorage.app",
+      messagingSenderId: "370724267395",
+      appId: "1:370724267395:web:a1e162926e5283836b82b6",
+      measurementId: "G-CQT01YM1N5"
+    };
+
+    // Incializa o Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    console.log("Firebase inicializado com sucesso!");
+    // Inicializa o Firestore
+    const db = getFirestore(app);
+    console.log("Firestore inicializado com sucesso!");
+    // Pega o id do formulario e envia os dados para o Firestore
+    // Adiciona um listener para o evento de envio do formulário
+    document.getElementById("formUsuario").addEventListener("submit", async function (event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+      // Pega os valores dos inputs
+      const nome = document.getElementById("nome").value;
+      const turma = document.getElementById("turma").value;
+      const idade = document.getElementById("idade").value;
+      //envia os dados para o Firestore
+      try {
+        const usuario = await addDoc(collection(db, "usuarios"), {
+          nome: nome,
+          turma: turma,
+          idade: idade
+        });
+        window.location.href = "/Telas/home.html"; // Redireciona para a próxima tela
+        console.log("Usuário adicionado com ID: ", usuario.id);
+      } catch (e) {
+        console.error("Erro ao adicionar usuário: ", e);
+      }
+    });
+
+
+
+  </script>
+</body>
+
+</html>

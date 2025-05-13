@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body id="TelaInicial" onload="gerarperguntas()">
+    <nav class="navbar">
+        <div>
+            <button type="submit" onclick="voltar()">Voltar</button>
+        </div>
+        <div>
+            <button class="btnSair" type="submit" onclick="sair()">Sair</button>
+        </div>
+    </nav>
+
+    <header id="div-logo">
+        <img id="logo" src="/imgs/logo.png" alt="">
+    </header>
+
+    <div>
+        <h1 id="perguntasquest">
+
+
+        </h1>
+    </div>
+    <div>
+        <form id="btns-telaInicial" onsubmit="guardarrespostas(event)">
+            <textarea id="resposta" name="" class="inputs-questionario" placeholder="Responda aqui"></textarea>
+            <button class="btnn" type="submit">Responder</button>
+        </form>
+    </div>
+    <footer>
+        <img id="div-marista" src="/imgs/marista.png" alt="">
+    </footer>
+
+    <script src="/back/js.js"></script>
+
+</body>
+
+</html>
