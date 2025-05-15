@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela Inicial</title>
     <link rel="stylesheet" href="/css/style.css">
-
+    
 </head>
 
-<body id="TelaInicial" onload="carregar()">
+<body id="TelaInicial">
     <nav class="divbtnsair">
 
         <button class="btnSair" type="submit" onclick="sair()">Sair</button>
@@ -20,28 +20,29 @@
         <img id="logo" src="/imgs/logo.png" alt="">
     </header>
 
-    <div >
-        <h1>Bem vindo, <h1 id="nomeUsuario"></h1> </h1>
+    <div>
+        <h1>Bem vindo, <h1 id="nomeUsuario"></h1>
+        </h1>
     </div>
     <div id="btns-telaInicial">
         <button class="btnn" type="submit" onclick="redquestinario()">Responder questionario</button>
     </div>
     <div class="morango-container">
         <div class="fala">
-          Oi eu sou a Manu e vou guiar você nessa jornada!
-          <br>Coloque seu nome e idade para começarmos.
-          <br>Vamos lá?
+            Oi eu sou a Manu e vou guiar você nessa jornada!
+            <br>Coloque seu nome e idade para começarmos.
+            <br>Vamos lá?
         </div>
         <div class="morango">
-          <!-- Substituir pelo seu morango -->
-          <img src="/imgs/Manuzinha.png" alt="Morango Guia">
+            <!-- Substituir pelo seu morango -->
+            <img src="/imgs/Manuzinha.png" alt="Morango Guia">
         </div>
-      </div>
+    </div>
     <footer>
         <img id="div-marista" src="/imgs/marista.png" alt="">
         <img src="" alt="">
     </footer>
-<script src="/back/js.js"></script>
+    <script type="module" src="/back/functions.js"></script>
 
 </body>
 
