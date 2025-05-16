@@ -22,28 +22,84 @@ console.log("Firebase inicializado com sucesso!");
 // Inicializa o Firestore
 const db = getFirestore(app);
 
+document.addEventListener("DOMContentLoaded", function () {
+    const pagina = detectarPagina();
+    if (pagina === "Comecar.html") {
+        comecar();
+    }
+    else if (pagina === "home.html") {
+        iniciarHome();
+    } else if (pagina === "TelaQuestionario.html") {
+        iniciarTelaQuestionario();
+    }
+    else {
+        console.log("Página não reconhecida: " + pagina);
+    }
+
+});
+
+function detectarPagina() {
+    const urlAtual = window.location.pathname;
+    return urlAtual.substring(urlAtual.lastIndexOf("/") + 1);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Tela inicial
 
-document.getElementById("formUsuario").addEventListener("submit", async function (event) {
-    event.preventDefault();
+async function comecar() {
+    
     const nome = document.getElementById("nome").value;
     const turma = document.getElementById("turma").value;
     const idade = document.getElementById("idade").value;
+    const form = document.getElementById("formUsuario");
     //Fazer validação dos campos
-
-    try {
-        const usuario = await addDoc(collection(db, "usuarios"), {
-            nome: nome,
-            turma: turma,
-            idade: idade
+    if(form){
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const nome = document.getElementById("nome").value;
+            const turma = document.getElementById("turma").value;
+            const idade = document.getElementById("idade").value;
+            //Fazer validação dos campos
+            if (nome === "" || turma === "" || idade === "") {
+                alert("Preencha todos os campos!");
+                return;
+            }
+            try {
+                const usuario = await addDoc(collection(db, "usuarios"), {
+                    nome: nome,
+                    turma: turma,
+                    idade: idade
+                });
+                localStorage.setItem("nomeUsuario", usuario.nome);
+                window.location.href = "home.html";
+            } catch (error) {
+                console.error("Erro ao adicionar o documento: ", error);
+            }
         });
-        localStorage.setItem("nomeUsuario", usuario.nome);
-        window.location.href = "/Telas/home.html";
-    } catch (error) {
-        console.error("Erro ao adicionar o documento: ", error);
     }
-});
-
+};
+function iniciarHome() {
+    const nome = localStorage.getItem("nomeUsuario");
+    if (nome) {
+        const span = document.getElementById("nomeUsuario");
+        if (span) {
+            span.textContent = nome;
+        }
+    } else {
+        window.location.href = "./comecar.html";
+    }
+}
 //Tela de login admin
 function logar(event) {
     document.getElementById("formLogin").addEventListener("submit", async function (event) {
@@ -82,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
             span.textContent = nome;
         }
     } else {
-        window.location.href = "inicial.html";
+        window.location.href = "./comecar.html";
 
     }
 

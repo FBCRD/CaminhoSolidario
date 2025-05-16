@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caminho Solidário</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #0e2f5a;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    header {
+      margin: 20px 0;
+    }
+
+    .logo {
+      width: 300px;
+      height: auto;
+    }
+
+    .table-container {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      width: 100%;
+      max-width: 700px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: white;
+    }
+
+    th,
+    td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      font-size: 18px;
+    }
+
+    .muted {
+      color: #888;
+      font-style: italic;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      background-color: black;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .logo {
+        width: 200px;
+      }
+
+      th,
+      td {
+        font-size: 14px;
+        padding: 10px 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="/logo.png" alt="Caminho Solidário" class="logo" />
+  </header>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Col 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="muted" colspan="2">Nome Aluno</td>
+        </tr>
+        <tr>
+          <td>Nome do Usuario</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 2</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 3</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 4</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 5</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 6</td>
+          <td><button class="btn">Button</button></td>
+        </tr>
+        <tr>
+          <td>Row 7</td>
+          <td>123</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>CENTRO SOCIAL MARISTA<br>SANTA MÁRTIR</p>
+  </footer>
+</body>
+
+</html>
