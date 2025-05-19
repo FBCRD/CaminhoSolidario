@@ -1,10 +1,12 @@
+// Configuração do Firebase
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
 
 
-// Configuração do Firebase
+
 const firebaseConfig = {
     apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
     authDomain: "caminhosolidario-49761.firebaseapp.com",
@@ -19,12 +21,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 console.log("Firebase inicializado com sucesso!");
-// Inicializa o Firestore
+// Inicializa o Firestore (banco de dados)
 const db = getFirestore(app);
 
+
+
+//Verifica a pagina atual
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "Comecar.html") {
+    if (pagina === "comecar.html") {
         comecar();
     }
     else if (pagina === "home.html") {
@@ -37,34 +42,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
-
+//Função para detectar a página atual
 function detectarPagina() {
     const urlAtual = window.location.pathname;
     return urlAtual.substring(urlAtual.lastIndexOf("/") + 1);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-//Tela inicial
-
+//Função cadastro de usuario
 async function comecar() {
-    
+
     const nome = document.getElementById("nome").value;
     const turma = document.getElementById("turma").value;
     const idade = document.getElementById("idade").value;
     const form = document.getElementById("formUsuario");
     //Fazer validação dos campos
-    if(form){
+    if (form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             const nome = document.getElementById("nome").value;
@@ -81,28 +73,61 @@ async function comecar() {
                     turma: turma,
                     idade: idade
                 });
-                
+                localStorage.setItem("usuarioId", usuario.id);
                 console.log("Usuário adicionado com sucesso: ", usuario.id);
-                
-                // window.location.href = "home.html";
+
+                window.location.href = "home.html";
             } catch (error) {
                 console.error("Erro ao adicionar o documento: ", error);
             }
         });
     }
 };
-function iniciarHome() {
-    const usuario = localStorage.getItem("usuario");
-    if (usuario) {
-        const nome = usuario.nome;
-        const span = document.getElementById("nomeUsuario");
-        if (span) {
-            span.textContent = nome;
-        }
+//Função para iniciar a home com o nome do usuário, função de sair e ir para o questionário
+async function iniciarHome() {
+    const usuarioId = localStorage.getItem("usuarioId");
+    const docRef = doc(db, "usuarios", usuarioId);
+    const docSnap = await getDoc(docRef);
+    // Verifica se o usuário está logado
+    document.getElementById("sair").addEventListener("click", async function (event) {
+        event.preventDefault();
+        // Limpa o nome do usuário do localStorage
+        localStorage.removeItem("usuarioId")
+        window.location.href = "comecar.html";
+        console.log("Usuário deslogado com sucesso!");
+        
+
+    });
+    document.getElementById("btnResQuest").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "TelaQuestionario.html";
+
+    });
+    if (docSnap.exists()) {
+        const usuario = docSnap.data();
+        document.getElementById("nomeUsuario").textContent = usuario.nome;
     } else {
+        alert("Usuário não encontrado!");
         window.location.href = "./comecar.html";
     }
 }
+
+function TelaQuestionario() {   
+    document.getElementById("btnEnviar").addEventListener("click", async function (event) {});
+    event.preventDefault();
+    const resposta = document.getElementById("resposta").value;
+    
+
+
+};
+
+
+
+
+
+
+
+
 //Tela de login admin
 function logar(event) {
     document.getElementById("formLogin").addEventListener("submit", async function (event) {
@@ -130,25 +155,4 @@ function logar(event) {
 
 
 
-}
-//Home
-document.addEventListener("DOMContentLoaded", function () {
-    // Verifica se o nome do usuário está armazenado no localStorage
-    const nome = localStorage.getItem("nomeUsuario");
-    if (nome) {
-        const span = document.getElementById("nomeUsuario");
-        if (span) {
-            span.textContent = nome;
-        }
-    } else {
-        window.location.href = "./comecar.html";
-
-    }
-
-});
-//Todas as telas
-function sair() {
-    // Limpa o nome do usuário do localStorage
-    localStorage.removeItem("nomeUsuario");
-    window.location.href = "Telainicial.html";
 }
