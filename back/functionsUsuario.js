@@ -81,8 +81,10 @@ async function comecar() {
                     turma: turma,
                     idade: idade
                 });
-                localStorage.setItem("nomeUsuario", usuario.nome);
-                window.location.href = "home.html";
+                
+                console.log("Usuário adicionado com sucesso: ", usuario.id);
+                
+                // window.location.href = "home.html";
             } catch (error) {
                 console.error("Erro ao adicionar o documento: ", error);
             }
@@ -90,8 +92,9 @@ async function comecar() {
     }
 };
 function iniciarHome() {
-    const nome = localStorage.getItem("nomeUsuario");
-    if (nome) {
+    const usuario = localStorage.getItem("usuario");
+    if (usuario) {
+        const nome = usuario.nome;
         const span = document.getElementById("nomeUsuario");
         if (span) {
             span.textContent = nome;
