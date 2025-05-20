@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
 
 
@@ -29,16 +29,20 @@ const db = getFirestore(app);
 //Verifica a pagina atual
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "comecar.html") {
+    if (pagina === "Comecar.html") {
         comecar();
     }
     else if (pagina === "home.html") {
         iniciarHome();
     } else if (pagina === "TelaQuestionario.html") {
-        iniciarTelaQuestionario();
+        console.log("TelaQuestionario");
+        gerarPerguntas();
+        TelaQuestionario();
     }
-    else {
-        console.log("Página não reconhecida: " + pagina);
+    else if (pagina === "teladeFinalizacao.html") {
+
+    } else {
+        console.log("Página não encontrada!" + pagina);
     }
 
 });
@@ -50,10 +54,6 @@ function detectarPagina() {
 
 //Função cadastro de usuario
 async function comecar() {
-
-    const nome = document.getElementById("nome").value;
-    const turma = document.getElementById("turma").value;
-    const idade = document.getElementById("idade").value;
     const form = document.getElementById("formUsuario");
     //Fazer validação dos campos
     if (form) {
@@ -92,10 +92,10 @@ async function iniciarHome() {
     document.getElementById("sair").addEventListener("click", async function (event) {
         event.preventDefault();
         // Limpa o nome do usuário do localStorage
-        localStorage.removeItem("usuarioId")
+
         window.location.href = "comecar.html";
         console.log("Usuário deslogado com sucesso!");
-        
+
 
     });
     document.getElementById("btnResQuest").addEventListener("click", async function (event) {
@@ -112,15 +112,86 @@ async function iniciarHome() {
     }
 }
 
-function TelaQuestionario() {   
-    document.getElementById("btnEnviar").addEventListener("click", async function (event) {});
-    event.preventDefault();
-    const resposta = document.getElementById("resposta").value;
-    
+let numeroPergunta = 1;
+async function TelaQuestionario() {
+    const usuarioId = localStorage.getItem("usuarioId");
+    const form = document.getElementById("formQuestionario");
+    //verifica se o usuário está logado
+    if (!usuarioId) {
+        console.alert("Usuário não encontrado!");
+        return;
+    }
+
+    await gerarPerguntas();
+
+
+
+
+    if (form) {
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const resposta = document.getElementById("resposta").value;
+            //Fazer validação dos campos
+            if (resposta === "") {
+                alert("Preencha todos os campos!");
+                return;
+            }
+            try {
+                const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
+                await addDoc(respostaRef, {
+                    perguntaId: "p"+numeroPergunta,
+                    resposta: resposta
+                });
+                console.log("Resposta enviada com sucesso!");
+
+                numeroPergunta++;
+                const temMaisPerguntas = await gerarPerguntas();
+
+                if (!temMaisPerguntas) {
+                   window.location.href = "teladeFinalização.html";
+                }
+            } catch (error) {
+                console.error("Erro ao adicionar o documento: ", error);
+            }
+        });
+    }
+    document.getElementById("btnSair").addEventListener("click", async function (event) {
+        event.preventDefault();
+        // Limpa o nome do usuário do localStorage
+        localStorage.removeItem("usuarioId");
+        window.location.href = "comecar.html";
+        console.log("Usuário deslogado com sucesso!");
+    });
+
+    document.getElementById("btnVoltar").addEventListener("click", async function (event) {
+        event.preventDefault();
+        history.back();
+    });
+
 
 
 };
 
+
+
+
+
+
+
+async function gerarPerguntas() {
+    const perguntasRef = doc(db, "perguntas", "p"+numeroPergunta);
+    const docSnap = await getDoc(perguntasRef);
+    if (docSnap.exists()) {
+        const pergunta = docSnap.data();
+        document.getElementById("perguntasquest").textContent = pergunta.pergunta;
+        document.getElementById("resposta").value = "";
+        return true;
+    }else {
+        console.log("Não ha mais perguntas!");
+        return false;
+    }
+
+};
 
 
 

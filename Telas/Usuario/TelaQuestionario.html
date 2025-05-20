@@ -9,13 +9,13 @@
 
 </head>
 
-<body id="TelaInicial" onload="gerarperguntas()">
+<body id="TelaInicial">
     <nav class="navbar">
         <div>
-            <button type="submit" onclick="voltar()">Voltar</button>
+            <button id="btnVoltar" type="submit" >Voltar</button>
         </div>
         <div>
-            <button class="btnSair" type="submit" onclick="sair()">Sair</button>
+            <button id="btnSair" class="btnSair" >Sair</button>
         </div>
     </nav>
 
@@ -30,16 +30,16 @@
         </h1>
     </div>
     <div>
-        <form id="btns-telaInicial" onsubmit="guardarrespostas(event)">
+        <form id="formQuestionario" class="btns-telaInicial">
             <textarea id="resposta" name="" class="inputs-questionario" placeholder="Responda aqui"></textarea>
-            <button class="btnn" type="submit">Responder</button>
+            <button id="btnEnviar" class="btnEnviar" type="submit">Responder</button>
         </form>
     </div>
     <footer>
         <img id="div-marista" src="/imgs/marista.png" alt="">
     </footer>
-
-    <script src="/back/js.js"></script>
+    <script type="module" src="/back/functionsUsuario.js"></script>
+    <!-- <script src="/back/js.js"></script> -->
 
 </body>
 

@@ -47,7 +47,8 @@ h1{
     text-align: center;
     color: whitesmoke;
 }
-#btns-telaInicial{
+.btns-telaInicial{
+    margin-top: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
