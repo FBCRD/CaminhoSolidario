@@ -1,5 +1,5 @@
- #TelaInicial{
-    background-color: #183962;
+ .TelaInicial{
+    background-color: #0e2f5a;
 }
 #logo{
     width: 200px;
@@ -55,13 +55,23 @@ h1{
 }
 .divbtnsair{
     text-align: end;
+    padding-right: 10px;
 }
 .btnSair{
     color: white;
     background-color: black;
     border-radius: 10px;
     border: none;
-    padding: 10px;
+    width: auto;
+    margin-right: 5px;
+}
+.btnVoltar{
+  color: white;
+  background-color: black;
+  border-radius: 10px;
+  border: none;
+  width: auto;
+  margin-left: 5px;
 }
 .inputs-questionario{
     border-radius: 10px;
@@ -100,20 +110,7 @@ td, th{
     font-family: Arial, Helvetica, sans-serif;
     font: bold;
 }
-.divfooter{
-    display: flex;
-    margin: auto;
-    justify-content: space-between; /* Espaço entre os itens */
-    align-items: center; /* Alinha os itens verticalmente */
-    padding: 20px; /* Espaçamento interno opcional */
-}   
-.divfooter img:first-child{
-    margin: 0 auto;
-    
-}
-.divfooter img:last-child{
-    margin-left:auto;
-} 
+
 .bodyteste {
     margin: auto;
     padding: 0;
@@ -180,14 +177,6 @@ td, th{
   .morango img {
     width: 300px; /* Ajuste o tamanho se quiser */
   }
-  footer {
-    margin: auto;
-    margin-top: 4%;
-    width: 100%;
-    text-align: center;
-    font-size: 12px;
-    color: #ccc;
-  }
   .marista {
     width: 100px; /* Ajuste o tamanho se quiser */
 
@@ -253,6 +242,15 @@ body.bodyteste {
   gap: 8px;
   max-width: 85%;
 }
+.manu-bloco-home {
+  position: absolute;
+  bottom: 384px;
+  right: -24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 85%;
+}
 .manu-blocoAdm {
   position: absolute;
   bottom: 323px;
@@ -275,7 +273,7 @@ body.bodyteste {
 }
 
 /* Setinha do balão */
-.fala-manu::after {
+fala-manu::after {
   content: "";
   position: absolute;
   bottom: -10px;
@@ -288,6 +286,14 @@ body.bodyteste {
 }
 
 .manu-interna {
+  position: absolute;
+  bottom: 190px;
+  right: -104px;
+  max-width: 200px;
+  width: 100%;
+  z-index: 10;
+}
+.manu-interna-home {
   position: absolute;
   bottom: 190px;
   right: -104px;
@@ -320,7 +326,7 @@ body.bodyteste {
 }
 
 #cmcbtn {
-  background-color: #0099ff;
+  background-color: #000000;
   color: white;
   padding: 0.7rem 1.2rem;
   border: none;
@@ -358,13 +364,26 @@ body.bodyteste {
 
 /* Rodapé */
 footer {
-  margin-top: 2rem;
+  color: white;
   text-align: center;
+  padding: 20px;
+  position: relative;
+  width: 100%;
+  
+  bottom: 0;
+  height: 50px; /* altura do footer */
 }
 
 footer img.marista {
+  margin-top: 200px;
   max-width: 150px;
   width: 80%;
+  height: auto;
+}
+.imgmarista{
+ 
+  max-width: 150px;
+  width: 10%;
   height: auto;
 }
 
@@ -375,6 +394,17 @@ footer img.marista {
   text-align: center;
 }
 
+/* Home usuario */
+.container-home{
+  max-width: 400px;
+  position: relative;
+  background: #00000028;
+  padding: 3.0rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
 
 
 /* Pagina RespostasADM */
@@ -390,7 +420,7 @@ footer img.marista {
   color: #000;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  
   padding: 20px;
 }
 
@@ -446,4 +476,95 @@ footer img.marista {
   .grid {
     grid-template-columns: 1fr;
   }
+}
+
+.predivgrid{
+  background-color: #0e2f5a;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.body {
+  background-color: #0e2f5a;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+header {
+  margin: 20px 0;
+}
+
+.logo {
+  width: 300px;
+  height: auto;
+}
+
+.table-container {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+  max-width: 700px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+th,
+td {
+  padding: 12px 8px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+th {
+  font-size: 18px;
+}
+
+.muted {
+  color: #888;
+  font-style: italic;
+}
+
+.btn {
+  padding: 6px 14px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+@media (max-width: 600px) {
+  .logo {
+    width: 200px;
+  }
+
+  th,
+  td {
+    font-size: 14px;
+    padding: 10px 6px;
+  }
+}
+.teste{
+  background-color: white;
 }
