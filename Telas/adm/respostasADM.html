@@ -4,143 +4,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/imgs/logo.png">
   <title>Caminho Solidário</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+  <link rel="stylesheet" href="/css/style.css">
 
-    body {
-      background-color: #0e2f5a;
-      color: #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-
-    header {
-      margin: 20px 0;
-    }
-
-    .logo {
-      width: 200px;
-      height: auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      width: 100%;
-      max-width: 1000px;
-    }
-
-    .card {
-      background-color: #e2e2e2;
-      box-shadow: 5px 5px 0px #4a4a4a;
-      padding: 20px;
-      border-radius: 5px;
-      position: relative;
-    }
-
-    .badge {
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      background-color: #1e1e1e;
-      color: white;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-    }
-
-    .card h3 {
-      margin-bottom: 10px;
-    }
-
-    .card p {
-      color: #333;
-    }
-
-    @media (max-width: 600px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
 </head>
 
-<body>
-  <header>
-    <img src="/logo.png" alt="Caminho Solidário" class="logo" />
+<body class="bodyrespostasAdm">
+  <nav class="navbar">
+    <div>
+      <button id="btnVoltar" type="submit">Voltar</button>
+    </div>
+    <div>
+      <button id="btnSair" class="btnSair">Sair</button>
+    </div>
+  </nav>
+  <header id="div-logo">
+    <img id="logo" src="/imgs/logo.png" alt="">
   </header>
-  <section class="grid">
-    <div class="card">
-      <div class="badge">1</div>
-      <h3>Qual é a sua comida favorita?</h3>
-    </div>
-    <div class="card">
-      <div class="badge">2</div>
-      <h3>Qual fruta você mais gosta?</h3>
-    </div>
-    <div class="card">
-      <div class="badge">3</div>
-      <h3>Perguntas</h3>
-    </div>
-    <div class="card">
-      <div class="badge">4</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">5</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">6</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">7</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">8</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">9</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">10</div>
-      <h3>Perguntas</h3>
-      <p>Respostas</p>
-    </div>
-    <div class="card">
-      <div class="badge">11</div>
-      <h3>Perguntas</h3>
-      <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptates dolores neque inventore magnam provident
-        officiis explicabo fugit non qui facilis iure pariatur quo deserunt in, distinctio ducimus eius porro amet.</p>
-    </div>
-    <div class="card">
-      <div class="badge">12</div>
-      <h3>Perguntas</h3>
-    </div>
-  </section>
+  <div class="divgrid">
+    <section class="grid">
+      <div class="card">
+        <div class="badge">1</div>
+        <h3>Qual é a sua comida favorita?</h3>
+      </div>
+      <div class="card">
+        <div class="badge">2</div>
+        <h3>Qual fruta você mais gosta?</h3>
+      </div>
+      <div class="card">
+        <div class="badge">3</div>
+        <h3>Perguntas</h3>
+      </div>
+      <div class="card">
+        <div class="badge">4</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">5</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">6</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">7</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">8</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">9</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">10</div>
+        <h3>Perguntas</h3>
+        <p>Respostas</p>
+      </div>
+      <div class="card">
+        <div class="badge">11</div>
+        <h3>Perguntas</h3>
+        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptates dolores neque inventore magnam provident
+          officiis explicabo fugit non qui facilis iure pariatur quo deserunt in, distinctio ducimus eius porro amet.
+        </p>
+      </div>
+      <div class="card">
+        <div class="badge">12</div>
+        <h3>Perguntas</h3>
+      </div>
+    </section>
+  </div>
+  <footer>
+    <img id="div-marista" src="/imgs/marista.png" alt="">
+
+  </footer>
 </body>
 
 </html>

@@ -5,49 +5,46 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Caminho Solidário</title>
+  <link rel="icon" type="image/png" href="/imgs/logo.png">
+  <title>Entrar ADM - Caminho Solidario</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script type="module" src="/back/functionsUsuario.js"></script>
 
 </head>
 
 <body class="bodyteste">
   <div class="logo">
-    <!-- Substituir pelo seu logo -->
+
     <img src="/imgs/logo.png" alt="Logo Caminho Solidário">
   </div>
 
 
   <div class="form-container">
     <h2>Entre</h2>
-    <form id="formAdm" method="get" onsubmit="logar(event)">
+    <form id="formUsuario">
       <div>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" placeholder="Digite seu Email" required>
+        <label for="email">Nome:</label><br>
+        <input type="email" id="email" name="email" placeholder="Digite seu nome" required>
       </div>
       <div>
         <label for="senha">Senha:</label><br>
-        <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
       </div>
-      <div>
-        <p id="attlogin"></p>
-      </div>
-      <div style="text-align: center;">
+      <div class="divbtninc" >
         <button id="cmcbtn" type="submit">Começar</button>
       </div>
     </form>
+    <div class="manu-blocoAdm">
+      <div class="fala-manu">
+        Bem vindo(a), Adm!😊<br>
+        Faça login para ver as respostas!
+      </div>
+    </div>
+    <img class="manu-internaAdm" src="/imgs/Manuzinha.png" alt="Manu Guia">
   </div>
 
 
-  <div class="morango-container">
-    <div class="fala">
-      Seja bem-vindo(a) administrador(a)!
-      <br>Coloque seu email e senha para começarmos.
-    </div>
-    <div class="morango">
-      <!-- Substituir pelo seu morango -->
-      <img src="/imgs/Manuzinha.png" alt="Morango Guia">
-    </div>
-  </div>
+
 
 
 
@@ -55,7 +52,7 @@
   <footer>
     <img class="marista" src="/imgs/marista.png" alt="" srcset="">
   </footer>
-  <script type="module" src="/back/functions.js"></script>
+
 </body>
 
 </html>

@@ -11,7 +11,7 @@ form{
     font-size: small;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centraliza os itens */
+    align-items: center;
     gap: 10px;
     
 }
@@ -253,6 +253,15 @@ body.bodyteste {
   gap: 8px;
   max-width: 85%;
 }
+.manu-blocoAdm {
+  position: absolute;
+  bottom: 323px;
+  right: -24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 85%;
+}
 
 .fala-manu {
   position: relative;
@@ -281,6 +290,14 @@ body.bodyteste {
 .manu-interna {
   position: absolute;
   bottom: 190px;
+  right: -104px;
+  max-width: 200px;
+  width: 100%;
+  z-index: 10;
+}
+.manu-internaAdm {
+  position: absolute;
+  bottom: 123px;
   right: -104px;
   max-width: 200px;
   width: 100%;
@@ -349,4 +366,84 @@ footer img.marista {
   max-width: 150px;
   width: 80%;
   height: auto;
+}
+
+#h1Final{
+  font-size: 50px;
+}
+.divbtninc{
+  text-align: center;
+}
+
+
+
+/* Pagina RespostasADM */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+.bodyrespostasAdm {
+  background-color: #0e2f5a;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.headerRespostasAdm {
+  margin: 20px 0;
+}
+
+.logo {
+  width: 200px;
+  height: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.card {
+  background-color: #e2e2e2;
+  box-shadow: 5px 5px 0px #4a4a4a;
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  background-color: #1e1e1e;
+  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.card h3 {
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: #333;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

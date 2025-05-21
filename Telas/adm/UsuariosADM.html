@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="/imgs/logo.png">
   <title>Caminho Solidário</title>
   <style>
     * {
@@ -95,9 +96,20 @@
 </head>
 
 <body>
-  <header>
-    <img src="/logo.png" alt="Caminho Solidário" class="logo" />
+
+
+  <nav class="navbar">
+    <div>
+      <button id="btnVoltar" type="submit">Voltar</button>
+    </div>
+    <div>
+      <button id="btnSair" class="btnSair">Sair</button>
+    </div>
+  </nav>
+  <header id="div-logo">
+    <img id="logo" src="/imgs/logo.png" alt="">
   </header>
+
 
   <div class="table-container">
     <table>
@@ -144,7 +156,7 @@
   </div>
 
   <footer>
-    <p>CENTRO SOCIAL MARISTA<br>SANTA MÁRTIR</p>
+    <img id="div-marista" src="/imgs/marista.png" alt="">
   </footer>
 </body>
 
