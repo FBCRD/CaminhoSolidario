@@ -100,6 +100,7 @@
  .navbar {
    justify-content: space-between;
    display: flex;
+   padding-bottom: 70px;
    /* Espaço entre os itens */
  }
 
@@ -268,7 +269,7 @@
    padding: 3.0rem;
    border-radius: 12px;
    width: 100%;
-   max-width: 400px;
+   max-width: 600px;
    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
  }
 
@@ -292,10 +293,11 @@
    gap: 8px;
    max-width: 85%;
  }
-  .manu-bloco-final {
+
+ .manu-bloco-final {
    position: absolute;
-   bottom: 232px;
-   right: -24px;
+   bottom: 332px;
+   right: 10px;
    display: flex;
    align-items: flex-end;
    gap: 8px;
@@ -324,7 +326,7 @@
  }
 
  /* Setinha do balão */
- fala-manu::after {
+ .fala-manu::after {
    content: "";
    position: absolute;
    bottom: -10px;
@@ -353,10 +355,11 @@
    width: 100%;
    z-index: 10;
  }
-  .manu-interna-final {
+
+ .manu-interna-final {
    position: absolute;
-   bottom: 54px;
-   right: -104px;
+   bottom: 150px;
+   right: -70px;
    max-width: 200px;
    width: 100%;
    z-index: 10;
@@ -627,6 +630,33 @@
    background-color: white;
  }
 
- .containerfinal{
-    max-width: 400px;
+ /* TelaDeFinalização */
+ .containerfinal {
+   background-color: #0e2f5a;
+   color: #000;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 20px;
+ }
+
+ .containerfinal h1 {
+   font-size: 30px;
+   margin-bottom: 20px;
+ }
+
+ .containerfinal h2 {
+   font-size: 20px;
+   margin-bottom: 10px;
+   color: white;
+ }
+
+ #logo-final {
+   width: 170px;
+  
+ }
+ .navbarquest{
+  justify-content: space-between;
+   display: flex;
+   
  }
