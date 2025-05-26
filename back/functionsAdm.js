@@ -1,0 +1,239 @@
+// Configuração do Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
+
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
+    authDomain: "caminhosolidario-49761.firebaseapp.com",
+    projectId: "caminhosolidario-49761",
+    storageBucket: "caminhosolidario-49761.firebasestorage.app",
+    messagingSenderId: "370724267395",
+    appId: "1:370724267395:web:a1e162926e5283836b82b6",
+    measurementId: "G-CQT01YM1N5"
+};
+
+// Incializa o Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+console.log("Firebase inicializado com sucesso!");
+// Inicializa o Firestore (banco de dados)
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+
+
+//Verifica a pagina atual
+document.addEventListener("DOMContentLoaded", function () {
+    const pagina = detectarPagina();
+    if (pagina == "telaLoginAdm.html") {
+        loginAdm();
+    }
+    else if (pagina == "homeadm.html") {
+        HomeAdm();
+    } else if (pagina == "usuariosADM.html") {
+        console.log("telaQuestionario");
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Usuário logado:", user.email);
+
+                // Aqui você chama as funções específicas da página
+                gerarUsuarios(); // se for a página de usuários
+                // carregarRespostas(); // se for a página de respostas
+                // gerarRelatorio(); // se for a página de relatórios
+
+            } else {
+                alert("Você precisa estar logado como administrador para acessar essa página.");
+                window.location.href = "TelaLoginAdm.html";
+            }
+        });
+
+    }
+    else if (pagina == "respostasADM.html") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const usuarioId = urlParams.get("id");
+        console.log("ID do usuário:", usuarioId);
+        carregarRespostas(usuarioId);
+
+
+
+    } else {
+        console.log("Página não encontrada!" + pagina);
+    }
+
+});
+//Função para detectar a página atual
+function detectarPagina() {
+    const urlAtual = window.location.pathname;
+    return urlAtual.substring(urlAtual.lastIndexOf("/") + 1);
+}
+
+
+function loginAdm() {
+    document.getElementById("formAdmLogin").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const email = document.getElementById("email").value;
+        const senha = document.getElementById("password").value;
+        //Fazer validação dos campos
+        signInWithEmailAndPassword(auth, email, senha)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                console.log("Usuário logado com sucesso!");
+                window.location.href = "homeadm.html";
+            })
+            .catch((error) => {
+
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error("Erro ao logar: ", errorMessage);
+                window.alert("Email ou senha incorretos!");
+            });
+
+
+
+
+    });
+
+
+}
+
+function HomeAdm() {
+    document.getElementById("btnRespostas").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "usuariosADM.html";
+    });
+    document.getElementById("btnsair").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "comecar.html";
+
+
+    });
+
+
+
+}
+
+window.verRespostas = function (usuarioId) {
+    window.location.href = `respostasADM.html?id=${usuarioId}`;
+};
+async function gerarUsuarios() {
+
+    const querySnapshot = await getDocs(collection(db, "usuarios"));
+    querySnapshot.forEach((doc) => {
+        const usuario = doc.data();
+        document.getElementById("tabelaAlunos").innerHTML += `
+        <tr>
+            <td>${usuario.nome}</td>
+            <td>${usuario.turma}</td>
+            <td>
+                <button class="btn" onclick = "verRespostas('${doc.id}')" >
+                    Ver respostas
+                </button>
+            </td>
+        </tr>`;
+
+
+
+
+
+    });
+}
+async function carregarRespostas(usuarioId) {
+
+    const docRef = doc(db, "usuarios", usuarioId);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const dadosUsuario = docSnap.data();
+        console.log("Usuário encontrado: ", dadosUsuario.nome);
+
+        const perguntasSnap = await getDocs(collection(db, "perguntas"));
+        perguntasSnap.forEach(async (doc) => {
+            const pergunta = doc.data();
+            const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
+            const respostasSnap = await getDocs(respostasRef);
+            const nPergunta = doc.id; // ID da pergunta
+
+            //Entrar na pergunta recuperar o id atraves do id da resposta do usuario
+            respostasSnap.forEach(async (doc) => {
+                const resposta = doc.data();
+                
+                document.getElementById("sectionResp").innerHTML += `
+                <div class="card">
+                    <div class="badge">${nPergunta}</div>
+                    <h3>${pergunta.pergunta}</h3>
+                    <p>${resposta.resposta}</p>
+                </div>`;
+
+            });
+
+        });
+        // respostasSnap.forEach((doc) => {
+        //     const resposta = doc.data();
+        //     document.getElementById("sectionResp").innerHTML += `
+        //     <div class="card">
+        //          <div class="badge">${resposta.id}</div>
+        //         <h3></h3>
+        //         <p>${resposta.resposta}</p>
+        //      </div>`;
+        // });
+    };
+}
+
+
+
+
+
+
+
+
+
+// onAuthStateChanged(auth, (user) => {
+//     if (user) {
+//         console.log("Usuário logado: ", user.email);
+//         carregarUsuarios();
+//         CarregarRespostas();
+//     } else {
+//         console.log("O usuario precisa estar logado para acessar essa página!");
+//         window.location.href = "TelaLoginAdm.html";
+//     }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

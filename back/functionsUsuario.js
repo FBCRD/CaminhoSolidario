@@ -29,17 +29,17 @@ const db = getFirestore(app);
 //Verifica a pagina atual
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "Comecar.html") {
+    if (pagina == "comecar.html") {
         comecar();
     }
-    else if (pagina === "home.html") {
+    else if (pagina == "home.html") {
         iniciarHome();
-    } else if (pagina === "TelaQuestionario.html") {
-        console.log("TelaQuestionario");
+    } else if (pagina == "telaQuestionario.html") {
+        console.log("telaQuestionario");
         gerarPerguntas();
         TelaQuestionario();
     }
-    else if (pagina === "teladeFinalizacao.html") {
+    else if (pagina == "teladeFinalizacao.html") {
 
     } else {
         console.log("Página não encontrada!" + pagina);
@@ -184,7 +184,7 @@ async function gerarPerguntas() {
     if (docSnap.exists()) {
         const pergunta = docSnap.data();
         document.getElementById("perguntasquest").textContent = pergunta.pergunta;
-        document.getElementById("resposta").value = "";
+    
         return true;
     }else {
         console.log("Não ha mais perguntas!");
