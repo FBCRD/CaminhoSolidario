@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     else if (pagina == "home.html") {
         iniciarHome();
-    } else if (pagina == "telaQuestionario.html") {
+    } else if (pagina === "telaQuestionario.html") {
         console.log("telaQuestionario");
         gerarPerguntas();
         TelaQuestionario();
@@ -48,8 +48,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 //Função para detectar a página atual
 function detectarPagina() {
-    const urlAtual = window.location.pathname;
-    return urlAtual.substring(urlAtual.lastIndexOf("/") + 1);
+    const url = window.location.pathname;
+    let pagina = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
+    pagina = pagina.toLowerCase(); // Ignora maiúsculas/minúsculas
+    return pagina;
 }
 
 //Função cadastro de usuario
@@ -100,7 +102,7 @@ async function iniciarHome() {
     });
     document.getElementById("btnResQuest").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "TelaQuestionario.html";
+        window.location.href = "telaQuestionario.html";
 
     });
     if (docSnap.exists()) {
@@ -108,7 +110,9 @@ async function iniciarHome() {
         document.getElementById("nomeUsuario").textContent = usuario.nome;
     } else {
         alert("Usuário não encontrado!");
-        window.location.href = "./comecar.html";
+        localStorage.removeItem("usuarioId");
+        window.location.href = "comecar.html";
+        window.location.href = "comecar.html";
     }
 }
 
@@ -139,7 +143,7 @@ async function TelaQuestionario() {
             try {
                 const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
                 await addDoc(respostaRef, {
-                    perguntaId: "p"+numeroPergunta,
+                    perguntaId: "p" + numeroPergunta,
                     resposta: resposta
                 });
                 console.log("Resposta enviada com sucesso!");
@@ -148,7 +152,7 @@ async function TelaQuestionario() {
                 const temMaisPerguntas = await gerarPerguntas();
 
                 if (!temMaisPerguntas) {
-                   window.location.href = "teladeFinalização.html";
+                    window.location.href = "teladeFinalizacao.html";
                 }
             } catch (error) {
                 console.error("Erro ao adicionar o documento: ", error);
@@ -179,14 +183,14 @@ async function TelaQuestionario() {
 
 
 async function gerarPerguntas() {
-    const perguntasRef = doc(db, "perguntas", "p"+numeroPergunta);
+    const perguntasRef = doc(db, "perguntas", "p" + numeroPergunta);
     const docSnap = await getDoc(perguntasRef);
     if (docSnap.exists()) {
         const pergunta = docSnap.data();
         document.getElementById("perguntasquest").textContent = pergunta.pergunta;
-    
+
         return true;
-    }else {
+    } else {
         console.log("Não ha mais perguntas!");
         return false;
     }
@@ -199,31 +203,4 @@ async function gerarPerguntas() {
 
 
 
-//Tela de login admin
-function logar(event) {
-    document.getElementById("formLogin").addEventListener("submit", async function (event) {
-        event.preventDefault();
-        const email = document.getElementById("email").value;
-        const senha = document.getElementById("senha").value;
-        const attlogin = document.getElementById("attlogin").value;
-        //Fazer validação dos campos
-        if (email !== "fabrodrigues@gmail.com" && senha !== "123") {
-            attlogin.textContent = "Email ou senha incorretos!";
-            return;
-        }
-        try {
-            const usuario = await addDoc(collection(db, "usuarios"), {
-                nome: nome,
-                turma: turma,
-                idade: idade
-            });
-            localStorage.setItem("nomeUsuario", usuario.nome);
-            window.location.href = "/Telas/home.html";
-        } catch (error) {
-            console.error("Erro ao adicionar o documento: ", error);
-        }
-    });
 
-
-
-}

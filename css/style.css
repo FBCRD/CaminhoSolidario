@@ -1,18 +1,93 @@
- .TelaInicial {
+/* Tela de Login - Usuario */
+  body.bodytela1 {
+   font-family: Arial, sans-serif;
+   background-color: #0d2f5f;
+   color: white;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 1rem;
+ }
+ .form-container {
+   position: relative;
+   background: #00000028;
+   padding: 3.0rem;
+   border-radius: 12px;
+   width: 100%;
+   max-width: 600px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+   text-align: center;
+ }
+.manu-bloco {
+   position: absolute;
+   bottom: 384px;
+   right: -24px;
+   display: flex;
+   align-items: flex-end;
+   gap: 8px;
+   max-width: 85%;
+ }
+  .fala-manu {
+   position: relative;
+   background-color: white;
+   color: #333;
+   padding: 10px 14px;
+   border-radius: 12px;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+   font-size: 0.9rem;
+   max-width: 220px;
+ }
+
+ /* Setinha do balão */
+ .fala-manu::after {
+   content: "";
+   position: absolute;
+   bottom: -10px;
+   right: 20px;
+   width: 0;
+   height: 0;
+   border-left: 10px solid transparent;
+   border-right: 10px solid transparent;
+   border-top: 10px solid white;
+ }
+  .manu-interna {
+   position: absolute;
+   bottom: 190px;
+   right: -104px;
+   max-width: 200px;
+   width: 100%;
+   z-index: 10;
+ } 
+ #cmcbtn {
+   background-color: #000000;
+   color: white;
+   padding: 0.7rem 1.2rem;
+   border: none;
+   border-radius: 10px;
+   cursor: pointer;
+   font-weight: bold;
+ }
+
+ #cmcbtn:hover {
+   background-color: #28323a;
+ }
+
+/* Tela inicial - usuario */
+.TelaInicial {
    background-color: #0e2f5a;
  }
 
- #logo {
-   width: 170px;
+ 
+ 
+.navbar {
+   justify-content: space-between;
+   display: flex;
    padding-bottom: 70px;
-
-
+   /* Espaço entre os itens */
  }
+ 
 
- #div-logo {
-   text-align: center;
-   margin: 0px;
- }
+ 
 
  form {
    font-size: small;
@@ -97,12 +172,7 @@
 
  }
 
- .navbar {
-   justify-content: space-between;
-   display: flex;
-   padding-bottom: 70px;
-   /* Espaço entre os itens */
- }
+ 
 
  /*Tabela pag respostas*/
  #divtable {
@@ -125,7 +195,14 @@
 
 
  }
-
+ .predivgrid {
+   background-color: #0e2f5a;
+   color: #000;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   padding: 20px;
+ }
  /*Titulo pag Respostas*/
  .titulo {
    font-size: 30px;
@@ -133,19 +210,11 @@
    font: bold;
  }
 
- .bodyteste {
-   margin: auto;
-   padding: 0;
-   background-color: #1e3a5f;
-   font-family: Arial, sans-serif;
-   color: white;
-   height: 100vh;
-   position: relative;
-   overflow-x: hidden;
- }
+
 
  .logo {
    text-align: center;
+  margin: auto;
 
  }
 
@@ -153,10 +222,7 @@
    width: 200px;
  }
 
- .form-container {
-   text-align: center;
-
- }
+ 
 
  .form-container h2 {
    margin-bottom: 20px;
@@ -227,15 +293,7 @@
    padding: 0;
  }
 
- body.bodyteste {
-   font-family: Arial, sans-serif;
-   background-color: #0d2f5f;
-   color: white;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding: 1rem;
- }
+
 
  /* Logo centralizada e responsiva */
  .logo img {
@@ -263,30 +321,14 @@
  }
 
  /* Estilo do formulário */
- .form-container {
-   position: relative;
-   background: #00000028;
-   padding: 3.0rem;
-   border-radius: 12px;
-   width: 100%;
-   max-width: 600px;
-   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
- }
+ 
 
  /* Manu */
- .manu-bloco {
-   position: absolute;
-   bottom: 384px;
-   right: -24px;
-   display: flex;
-   align-items: flex-end;
-   gap: 8px;
-   max-width: 85%;
- }
+ 
 
  .manu-bloco-home {
    position: absolute;
-   bottom: 232px;
+   bottom: 200px;
    right: -24px;
    display: flex;
    align-items: flex-end;
@@ -314,42 +356,12 @@
    max-width: 85%;
  }
 
- .fala-manu {
-   position: relative;
-   background-color: white;
-   color: #333;
-   padding: 10px 14px;
-   border-radius: 12px;
-   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-   font-size: 0.9rem;
-   max-width: 220px;
- }
 
- /* Setinha do balão */
- .fala-manu::after {
-   content: "";
-   position: absolute;
-   bottom: -10px;
-   right: 20px;
-   width: 0;
-   height: 0;
-   border-left: 10px solid transparent;
-   border-right: 10px solid transparent;
-   border-top: 10px solid white;
- }
 
- .manu-interna {
-   position: absolute;
-   bottom: 190px;
-   right: -104px;
-   max-width: 200px;
-   width: 100%;
-   z-index: 10;
- }
 
  .manu-interna-home {
    position: absolute;
-   bottom: 54px;
+   bottom: 30px;
    right: -104px;
    max-width: 200px;
    width: 100%;
@@ -374,34 +386,11 @@
    z-index: 10;
  }
 
- .form-container h2 {
-   text-align: center;
-   margin-bottom: 1rem;
-   font-size: 17px;
- }
 
- .form-container input {
-   width: 100%;
-   padding: 0.6rem;
-   margin: 0.5rem 0 1rem 0;
-   border: none;
-   border-radius: 8px;
-   font-size: 1rem;
- }
 
- #cmcbtn {
-   background-color: #000000;
-   color: white;
-   padding: 0.7rem 1.2rem;
-   border: none;
-   border-radius: 10px;
-   cursor: pointer;
-   font-weight: bold;
- }
 
- #cmcbtn:hover {
-   background-color: #0077cc;
- }
+
+
 
  /* Personagem e fala */
  .morango-container {
@@ -537,14 +526,7 @@
    }
  }
 
- .predivgrid {
-   background-color: #0e2f5a;
-   color: #000;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   padding: 20px;
- }
+
 
  * {
    box-sizing: border-box;
