@@ -37,11 +37,10 @@ document.addEventListener("DOMContentLoaded", function () {
         HomeAdm();
     } else if (pagina == "usuariosADM.html") {
         console.log("telaQuestionario");
+        // Verificando se o usuário está logado
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Usuário logado:", user.email);
-
-                // Aqui você chama as funções específicas da página
                 gerarUsuarios(); // se for a página de usuários
                 // carregarRespostas(); // se for a página de respostas
                 // gerarRelatorio(); // se for a página de relatórios
@@ -144,7 +143,6 @@ async function gerarUsuarios() {
     });
 }
 async function carregarRespostas(usuarioId) {
-
     const docRef = doc(db, "usuarios", usuarioId);
     const docSnap = await getDoc(docRef);
 
@@ -153,75 +151,32 @@ async function carregarRespostas(usuarioId) {
         console.log("Usuário encontrado: ", dadosUsuario.nome);
 
         const perguntasSnap = await getDocs(collection(db, "perguntas"));
-        perguntasSnap.forEach(async (doc) => {
-            const pergunta = doc.data();
-            const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
-            const respostasSnap = await getDocs(respostasRef);
-            const nPergunta = doc.id; // ID da pergunta
+        const respostasSnap = await getDocs(collection(db, "usuarios", usuarioId, "respostas"));
 
-            //Entrar na pergunta recuperar o id atraves do id da resposta do usuario
-            respostasSnap.forEach(async (doc) => {
-                const resposta = doc.data();
-                
-                document.getElementById("sectionResp").innerHTML += `
+        const perguntas = {};
+        perguntasSnap.forEach((doc) => {
+            perguntas[doc.id] = doc.data().pergunta;
+            console.log("Pergunta carregada: ", doc.data().pergunta);
+        });
+
+        respostasSnap.forEach((doc) => {
+            const resposta = doc.data();
+            const perguntaId = resposta.perguntaId; // assumindo que o ID da resposta é o ID da pergunta
+
+            const perguntaTexto = perguntas[perguntaId] || "Pergunta não encontrada";
+
+            document.getElementById("sectionResp").innerHTML += `
                 <div class="card">
-                    <div class="badge">${nPergunta}</div>
-                    <h3>${pergunta.pergunta}</h3>
+                    <div class="badge">${perguntaId}</div>
+                    <h3>${perguntaTexto}</h3>
                     <p>${resposta.resposta}</p>
                 </div>`;
-
-            });
-
         });
-        // respostasSnap.forEach((doc) => {
-        //     const resposta = doc.data();
-        //     document.getElementById("sectionResp").innerHTML += `
-        //     <div class="card">
-        //          <div class="badge">${resposta.id}</div>
-        //         <h3></h3>
-        //         <p>${resposta.resposta}</p>
-        //      </div>`;
-        // });
-    };
+
+    } else {
+        console.log("Usuário não encontrado.");
+    }
 }
-
-
-
-
-
-
-
-
-
-// onAuthStateChanged(auth, (user) => {
-//     if (user) {
-//         console.log("Usuário logado: ", user.email);
-//         carregarUsuarios();
-//         CarregarRespostas();
-//     } else {
-//         console.log("O usuario precisa estar logado para acessar essa página!");
-//         window.location.href = "TelaLoginAdm.html";
-//     }
-// });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
