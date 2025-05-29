@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             } else {
                 alert("Você precisa estar logado como administrador para acessar essa página.");
-                window.location.href = "TelaLoginAdm.html";
+                window.location.href = "adm/TelaLoginAdm.html";
             }
         });
         btns();
@@ -80,7 +80,7 @@ function btns() {
         try {
             await auth.signOut();
             console.log("Usuário deslogado com sucesso!");
-            window.location.href = "TelaLoginAdm.html";
+            window.location.href = "adm/TelaLoginAdm.html";
         } catch (error) {
             console.error("Erro ao deslogar: ", error);
         }
@@ -102,7 +102,7 @@ function loginAdm() {
                 // Signed in
                 const user = userCredential.user;
                 console.log("Usuário logado com sucesso!");
-                window.location.href = "homeadm.html";
+                window.location.href = "/homeAdm.html";
             })
             .catch((error) => {
 
@@ -123,11 +123,11 @@ function loginAdm() {
 function HomeAdm() {
     document.getElementById("btnRespostas").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "usuariosADM.html";
+        window.location.href = "adm/usuariosADM.html";
     });
     document.getElementById("btnsair").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "comecar.html";
+        window.location.href = "adm/telaLoginAdm.html";
 
 
     });
@@ -137,7 +137,7 @@ function HomeAdm() {
 }
 
 window.verRespostas = function (usuarioId) {
-    window.location.href = `respostasADM.html?id=${usuarioId}`;
+    window.location.href = `adm/respostasADM.html?id=${usuarioId}`;
 };
 async function gerarUsuarios() {
 

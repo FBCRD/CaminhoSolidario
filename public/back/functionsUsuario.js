@@ -79,7 +79,7 @@ async function index() {
                 localStorage.setItem("usuarioId", usuario.id);
                 console.log("Usuário adicionado com sucesso: ", usuario.id);
 
-                window.location.href = "home.html";
+                window.location.href = "usuario/home.html";
             } catch (error) {
                 console.error("Erro ao adicionar o documento: ", error);
             }
@@ -103,7 +103,7 @@ async function iniciarHome() {
     });
     document.getElementById("btnResQuest").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "telaQuestionario.html";
+        window.location.href = "/public/usuario/telaQuestionario.html";
 
     });
     if (docSnap.exists()) {
@@ -113,7 +113,7 @@ async function iniciarHome() {
         alert("Usuário não encontrado!");
         localStorage.removeItem("usuarioId");
         window.location.href = "index.html";
-        window.location.href = "index.html";
+        
     }
 }
 
@@ -155,7 +155,7 @@ async function TelaQuestionario() {
                 const temMaisPerguntas = await gerarPerguntas();
 
                 if (!temMaisPerguntas) {
-                    window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+                    window.location.href = "usuario/teladeFinalizacao.html";
                 }
             } catch (error) {
                 console.error("Erro ao adicionar o documento: ", error);
