@@ -30,12 +30,12 @@ const auth = getAuth(app);
 //Verifica a pagina atual
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina == "telaLoginAdm.html") {
+    if (pagina === "telaLoginAdm.html") {
         loginAdm();
     }
-    else if (pagina == "homeadm.html") {
+    else if (pagina === "homeadm.html") {
         HomeAdm();
-    } else if (pagina == "usuariosADM.html") {
+    } else if (pagina === "usuariosADM.html") {
         console.log("telaQuestionario");
         // Verificando se o usuário está logado
         onAuthStateChanged(auth, (user) => {
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
         btns();
         
     }
-    else if (pagina == "respostasADM.html") {
+    else if (pagina === "respostasADM.html") {
         const urlParams = new URLSearchParams(window.location.search);
         const usuarioId = urlParams.get("id");
         console.log("ID do usuário:", usuarioId);
@@ -70,8 +70,10 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 //Função para detectar a página atual
 function detectarPagina() {
-    const urlAtual = window.location.pathname;
-    return urlAtual.substring(urlAtual.lastIndexOf("/") + 1);
+    const url = window.location.pathname;
+    let pagina = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
+    pagina = pagina.toLowerCase(); // Ignora maiúsculas/minúsculas
+    return pagina;
 }
 
 function btns() {
