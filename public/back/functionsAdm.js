@@ -104,7 +104,7 @@ function loginAdm() {
                 // Signed in
                 const user = userCredential.user;
                 console.log("Usuário logado com sucesso!");
-                window.location.href = "adm/homeadm.html";
+                window.location.href = "homeadm.html";
             })
             .catch((error) => {
 
@@ -125,11 +125,11 @@ function loginAdm() {
 function HomeAdm() {
     document.getElementById("btnRespostas").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "adm/usuariosADM.html";
+        window.location.href = "usuariosADM.html";
     });
     document.getElementById("btnsair").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "adm/telaLoginAdm.html";
+        window.location.href = "telaLoginAdm.html";
 
 
     });
