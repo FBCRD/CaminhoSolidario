@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <title>Questionario - Caminho Solidario</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="module" src="/back/functionsUsuario.js"></script>
+
+</head>
+
+<body class="TelaInicial">
+    <nav class="navbar">
+        <div>
+            <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
+        </div>
+        <div>
+            <img class="logo" src="/imgs/logo.png" alt="">
+        </div>
+        <div>
+            <button id="btnSair" class="btnSair">Sair</button>
+        </div>
+    </nav>
+    <div class="container-home">
+        <div>
+            <h1 id="perguntasquest">
+
+
+            </h1>
+        </div>
+        <div>
+            <form id="formQuestionario" class="btns-telaInicial">
+                <textarea id="resposta" name="resposta" class="inputs-questionario" placeholder="Responda aqui"
+                    required></textarea>
+                <button id="btnEnviar" class="btnEnviar" type="submit">Responder</button>
+            </form>
+            <div class="manu-bloco">
+                <div id="curiosidades" class="fala-manu">
+                </div>
+            </div>
+            <img class="manu-interna" src="/imgs/Manuzinha.png" alt="Manu Guia">
+        </div>
+    </div>
+    <footer class="footer-marista">
+        <img src="/imgs/centroSocial.png" alt="">
+    </footer>
+    <!-- <script src="/back/js.js"></script> -->
+
+</body>
+
+</html>
