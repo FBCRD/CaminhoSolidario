@@ -30,12 +30,12 @@ const auth = getAuth(app);
 //Verifica a pagina atual
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "telaLoginAdm.html") {
+    if (pagina === "telaloginadm.html") {
         loginAdm();
     }
     else if (pagina === "homeadm.html") {
         HomeAdm();
-    } else if (pagina === "usuariosADM.html") {
+    } else if (pagina === "usuariosadm.html") {
         console.log("telaQuestionario");
         // Verificando se o usuário está logado
         onAuthStateChanged(auth, (user) => {
@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         btns();
-        
+
     }
-    else if (pagina === "respostasADM.html") {
+    else if (pagina === "respostasadm.html") {
         const urlParams = new URLSearchParams(window.location.search);
         const usuarioId = urlParams.get("id");
         console.log("ID do usuário:", usuarioId);
@@ -180,24 +180,28 @@ async function carregarRespostas(usuarioId) {
             console.log("Pergunta carregada: ", doc.data().pergunta);
         });
 
+        let num = 1;
+
         respostasSnap.forEach((doc) => {
             const resposta = doc.data();
-            const perguntaId = resposta.perguntaId; // assumindo que o ID da resposta é o ID da pergunta
-
+            const perguntaId = resposta.perguntaId;
+            
             const perguntaTexto = perguntas[perguntaId] || "Pergunta não encontrada";
 
             document.getElementById("sectionResp").innerHTML += `
                 <div class="card">
-                    <div class="badge">${perguntaId}</div>
+                    <div class="badge">${num}</div>
                     <h3>${perguntaTexto}</h3>
                     <p>${resposta.resposta}</p>
                 </div>`;
+
+            num++;
         });
         document.getElementById("nomeUsuario").innerText = `Respostas de: ${dadosUsuario.nome}`;
     } else {
         console.log("Usuário não encontrado.");
     }
-    
+
 }
 
 
