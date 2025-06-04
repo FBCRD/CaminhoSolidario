@@ -1,12 +1,13 @@
 // Configuração do Firebase
+//Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
 
 
-
+//Codigo gerado pelo Firebase, cada projeto gera um codigo especifico
 const firebaseConfig = {
     apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
     authDomain: "caminhosolidario-49761.firebaseapp.com",
@@ -28,6 +29,7 @@ const auth = getAuth(app);
 
 
 //Verifica a pagina atual
+//Verifica a pagina atual e conforme a pagina em que ele se encontra da inicio ao uso da função respectiva daquela pagina
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
     if (pagina === "telaloginadm.html") {
@@ -41,9 +43,8 @@ document.addEventListener("DOMContentLoaded", function () {
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Usuário logado:", user.email);
-                gerarUsuarios(); // se for a página de usuários
-                // carregarRespostas(); // se for a página de respostas
-                // gerarRelatorio(); // se for a página de relatórios
+                gerarUsuarios();
+
 
             } else {
                 alert("Você precisa estar logado como administrador para acessar essa página.");
@@ -76,6 +77,7 @@ function detectarPagina() {
     return pagina;
 }
 
+//Função para detectar os botões VOLTAR e SAIR, dentro da pagina
 function btns() {
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
@@ -93,22 +95,22 @@ function btns() {
     });
 }
 
+
+//Função para o adm fazer login
 function loginAdm() {
     document.getElementById("formAdmLogin").addEventListener("submit", async function (event) {
         event.preventDefault();
         const email = document.getElementById("email").value;
         const senha = document.getElementById("password").value;
-        //Fazer validação dos campos
+        //função do firebase que verifica se o usuario é autorizado a entrar ou não, ele verifica se o email e a senha são os mesmos que foram registrados no autenticador do firebase, diretamente no projeto
         signInWithEmailAndPassword(auth, email, senha)
             .then((userCredential) => {
-                // Signed in
+                // Entrou
                 const user = userCredential.user;
-                console.log("Usuário logado com sucesso!");
+                console.log("Usuário logado com sucesso!", user);
                 window.location.href = "homeadm.html";
             })
             .catch((error) => {
-
-                const errorCode = error.code;
                 const errorMessage = error.message;
                 console.error("Erro ao logar: ", errorMessage);
                 window.alert("Email ou senha incorretos!");
@@ -122,6 +124,7 @@ function loginAdm() {
 
 }
 
+//Usado apenas para dar função para os botões da Home Administradora
 function HomeAdm() {
     document.getElementById("btnRespostas").addEventListener("click", async function (event) {
         event.preventDefault();
@@ -138,11 +141,30 @@ function HomeAdm() {
 
 }
 
+//Função que se encontra onde o ADMIN ve os usuarios que responderam as perguntas e leva o ADMIN para o  as respostas do respectivo usuario
 window.verRespostas = function (usuarioId) {
     window.location.href = `respostasADM.html?id=${usuarioId}`;
 };
-async function gerarUsuarios() {
 
+//Função que se encontra na tela onde o ADM pode ver os usuarios que responderam, serve para excluir o usuario
+window.excluir = async function (usuarioId) {
+    //no firebase primeiro é necessario excluir as subcoleções de um documento antes de exclui-lo de fato, abaixo de forma recursiva ele exclui as subcoleções para depois excluir o usuario
+    const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
+    const snapshot = await getDocs(respostasRef);
+
+    for (const doc of snapshot.docs) {
+        await deleteDoc(doc.ref);
+    }
+
+    const docRef = doc(db, "usuarios", usuarioId);
+    await deleteDoc(docRef);
+    location.reload();
+    console.log("Documento deletado");
+};
+
+
+//Função usada para gerar os usuarios, faz a requisição pro banco e cria uma tabela em html mostrando os resultados
+async function gerarUsuarios() {
     const querySnapshot = await getDocs(collection(db, "usuarios"));
     querySnapshot.forEach((doc) => {
         const usuario = doc.data();
@@ -154,6 +176,9 @@ async function gerarUsuarios() {
                 <button class="btn" onclick = "verRespostas('${doc.id}')" >
                     Ver respostas
                 </button>
+                <button class="btn" onclick = "excluir('${doc.id}')" >
+                    Excluir Usuario
+                </button>
             </td>
         </tr>`;
 
@@ -163,6 +188,8 @@ async function gerarUsuarios() {
 
     });
 }
+
+//Faz a requisição conforme o usuario selecionado e depois mostra em html suas respectivas respostas
 async function carregarRespostas(usuarioId) {
     const docRef = doc(db, "usuarios", usuarioId);
     const docSnap = await getDoc(docRef);
@@ -185,7 +212,7 @@ async function carregarRespostas(usuarioId) {
         respostasSnap.forEach((doc) => {
             const resposta = doc.data();
             const perguntaId = resposta.perguntaId;
-            
+
             const perguntaTexto = perguntas[perguntaId] || "Pergunta não encontrada";
 
             document.getElementById("sectionResp").innerHTML += `
