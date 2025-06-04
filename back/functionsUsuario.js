@@ -144,7 +144,7 @@ async function TelaQuestionario() {
             try {
                 const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
                 await addDoc(respostaRef, {
-                    perguntaId: "p" + numeroPergunta,
+                    perguntaId: "p0" + numeroPergunta,
                     resposta: resposta
                 });
                 
@@ -191,29 +191,106 @@ function telaFinal(){
 
 
 
-
-
+const perguntasComSelect = {
+    "2": [
+        "Maçã", "Banana", "Uva", "Laranja", "Morango", "Melancia", "Abacaxi", "Pera", "Mamão", "Manga",
+        "Kiwi", "Limão", "Coco", "Ameixa", "Cereja", "Goiaba", "Caqui", "Figo", "Maracujá", "Pêssego",
+        "Tangerina", "Abacate", "Framboesa", "Amora", "Graviola", "Jabuticaba", "Outras"
+    ],
+    "3": [
+        "Cenoura", "Tomate", "Alface", "Brócolis", "Pepino", "Batata", "Batata-doce", "Abóbora", "Chuchu",
+        "Couve", "Espinafre", "Repolho", "Beterraba", "Vagem", "Ervilha", "Milho", "Quiabo", "Rabanete",
+        "Berinjela", "Pimentão", "Abobrinha", "Cebola", "Alho", "Salsão", "Aipo", "Mandioquinha", "Outros"
+    ],
+    "8": ["Fazer doces", "Fazer salgados", "Fazer massas", "Outra coisa"],
+    "9": ["Lanches", "Refeições", "Sobremesas"],
+};
 
 
 async function gerarPerguntas() {
-    const perguntasRef = doc(db, "perguntas", "p" + numeroPergunta);
+    const perguntasRef = doc(db, "perguntas", "p0" + numeroPergunta);
     const docSnap = await getDoc(perguntasRef);
     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
-    const curiosidadesSnap = await getDoc(curiosidadesRef);    
-    
+    const curiosidadesSnap = await getDoc(curiosidadesRef);
+
     if (docSnap.exists()) {
         const pergunta = docSnap.data();
         const curiosidade = curiosidadesSnap.data();
-        document.getElementById("curiosidades").textContent = curiosidade.texto;
-        document.getElementById("perguntasquest").textContent = pergunta.pergunta;
+
+        document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
+        document.getElementById("perguntasquest").textContent = pergunta.texto;
+
+        const perguntaId = numeroPergunta.toString();
+        const campoResposta = document.getElementById("resposta");
+
+        // Remove o campo anterior (textarea ou select)
+        if (campoResposta) {
+            campoResposta.remove();
+        }
+
+        let novoCampo;
+
+        if (perguntasComSelect[perguntaId]) {
+            // Cria SELECT
+            novoCampo = document.createElement("select");
+            novoCampo.id = "resposta";
+            novoCampo.name = "resposta";
+            novoCampo.className = "select-personalizado";
+            novoCampo.required = true;
+
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.text = "Selecione uma opção";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            novoCampo.appendChild(optionDefault);
+
+            perguntasComSelect[perguntaId].forEach(opcao => {
+                const option = document.createElement("option");
+                option.value = opcao;
+                option.textContent = opcao;
+                novoCampo.appendChild(option);
+            });
+
+        } else {
+            // Cria TEXTAREA
+            novoCampo = document.createElement("textarea");
+            novoCampo.id = "resposta";
+            novoCampo.name = "resposta";
+            novoCampo.className = "inputs-questionario";
+            novoCampo.placeholder = "Responda aqui";
+            novoCampo.required = true;
+        }
+
+        const form = document.getElementById("formQuestionario");
+        form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
 
         return true;
     } else {
-        console.log("Não ha mais perguntas!");
+        console.log("Não há mais perguntas!");
         return false;
     }
+}
 
-};
+// async function gerarPerguntas() {
+//     const perguntasRef = doc(db, "perguntas", "p" + numeroPergunta);
+//     const docSnap = await getDoc(perguntasRef);
+//     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
+//     const curiosidadesSnap = await getDoc(curiosidadesRef);    
+    
+//     if (docSnap.exists()) {
+//         const pergunta = docSnap.data();
+//         const curiosidade = curiosidadesSnap.data();
+//         document.getElementById("curiosidades").textContent = curiosidade.texto;
+//         document.getElementById("perguntasquest").textContent = pergunta.pergunta;
+
+//         return true;
+//     } else {
+//         console.log("Não ha mais perguntas!");
+//         return false;
+//     }
+
+// };
 
 
 

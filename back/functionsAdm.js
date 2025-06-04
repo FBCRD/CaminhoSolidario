@@ -129,7 +129,7 @@ function HomeAdm() {
     });
     document.getElementById("btnsair").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "comecar.html";
+        window.location.href = "TelaLoginAdm.html";
 
 
     });
@@ -176,8 +176,8 @@ async function carregarRespostas(usuarioId) {
 
         const perguntas = {};
         perguntasSnap.forEach((doc) => {
-            perguntas[doc.id] = doc.data().pergunta;
-            console.log("Pergunta carregada: ", doc.data().pergunta);
+            perguntas[doc.id] = doc.data().texto;
+            console.log("Pergunta carregada: ", doc.data().texto);
         });
 
         let num = 1;
