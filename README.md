@@ -72,6 +72,7 @@ Para cada usuário estarão disponíveis as seguintes opções:
 Ver respostas: acessar todas as respostas dadas no questionário.
 
 Excluir usuário: remover o cadastro e as respostas do usuário.
+
 --------------------------------------------------------------------------------------------
 Ide utilizada: VS CODE
 
