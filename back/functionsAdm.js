@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             } else {
-                alert("Você precisa estar logado como administrador para acessar essa página.");
+                
                 window.location.href = "TelaLoginAdm.html";
             }
         });
