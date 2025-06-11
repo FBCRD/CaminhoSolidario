@@ -217,3 +217,18 @@ async function inserirReceitas() {
     console.log("Receitas inseridas com sucesso!");
 }
 inserirReceitas();
+
+
+
+async function adicionarSelect(){
+
+    db.collection("perguntas").doc("p02").update({
+        opcoes:["Maçã", "Banana", "Uva", "Laranja", "Morango", "Melancia", "Abacaxi", "Pera", "Mamão", "Manga",
+        "Kiwi", "Limão", "Coco", "Ameixa", "Cereja", "Goiaba", "Caqui", "Figo", "Maracujá", "Pêssego",
+        "Tangerina", "Abacate", "Framboesa", "Amora", "Graviola", "Jabuticaba"]
+
+    })
+    
+
+
+}
