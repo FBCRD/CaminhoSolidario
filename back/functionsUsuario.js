@@ -31,7 +31,7 @@ const db = getFirestore(app);
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
     if (pagina === "index.html") {
-        index();
+        cadastroUsuario();
     }
     else if (pagina === "home.html") {
         iniciarHome();
@@ -40,10 +40,14 @@ document.addEventListener("DOMContentLoaded", function () {
         gerarPerguntas();
         TelaQuestionario();
     }
-    else if (pagina ==="teladefinalizacao.html") {
+    else if (pagina === "teladefinalizacao.html") {
         console.log("telaFinalizacao");
         telaFinal();
-    } else {
+    } else if (pagina === "loginusuario.html") {
+        console.log("loginUsuario");
+        loginUsuario();
+    }
+    else {
         console.log("Página não encontrada!" + pagina);
     }
 
@@ -60,24 +64,23 @@ function detectarPagina() {
 
 
 //Função cadastro de usuario
-async function index() {
+async function cadastroUsuario() {
     const form = document.getElementById("formUsuario");
     //Fazer validação dos campos
     if (form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             const nome = document.getElementById("nome").value;
+            const nomeUsuario = document.getElementById("nomeUsuario").value;
+            const senha = document.getElementById("senha").value;
             const turma = document.getElementById("turma").value;
             const idade = document.getElementById("idade").value;
-            //Fazer validação dos campos
-            if (nome === "" || turma === "" || idade === "") {
-                alert("Preencha todos os campos!");
-                return;
-            }
             //faz a adição do documento no banco de dados "usuario" no banco de dados
             try {
                 const usuario = await addDoc(collection(db, "usuarios"), {
                     nome: nome,
+                    nomeUsuario: nomeUsuario,
+                    senha: senha,
                     turma: turma,
                     idade: idade
                 });
@@ -92,6 +95,45 @@ async function index() {
         });
     }
 };
+
+async function loginUsuario() {
+    const form = document.getElementById("formLoginUsuario");
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const nomeUsuario = document.getElementById("nomeUsuario").value;
+        const senha = document.getElementById("senha").value;
+        const usuariosRef = collection(db, "usuarios");
+        const q = query(usuariosRef, where("nomeUsuario", "==", nomeUsuario), where("senha", "==", senha));
+
+        const querySnapshot = await getDocs(q);
+
+        // verifica se encontrou algum documento
+        if (!querySnapshot.empty) {
+            // pega o primeiro documento retornado
+            const doc = querySnapshot.docs[0];
+
+            // salva o ID do usuário
+            const userId = doc.id;
+            localStorage.setItem("usuarioId", userId);
+            console.log("ID do usuário:", userId);
+            window.location.href = "home.html";
+        } else {
+            window.alert("Usuário ou senha incorretos!");
+            location.reload();
+        }
+
+
+
+
+
+
+
+    })
+
+
+
+
+}
 
 
 
@@ -159,7 +201,7 @@ async function TelaQuestionario() {
                     perguntaId: "p0" + numeroPergunta,
                     resposta: resposta
                 });
-                
+
                 console.log("Resposta enviada com sucesso!");
 
                 numeroPergunta++;
@@ -195,7 +237,7 @@ async function TelaQuestionario() {
 
 
 //função do botão de sair, da tela Final
-async function telaFinal(){
+async function telaFinal() {
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
         // Limpa o nome do usuário do localStorage
@@ -207,50 +249,37 @@ async function telaFinal(){
     console.log(idusuario)
     const respostasRef = collection(db, "usuarios", idusuario, "respostas");
 
-  // Faz a query buscando apenas onde perguntaid == "p02"
-  const q = query(respostasRef, where("perguntaId", "==", "p02"));
-  const querySnapshot = await getDocs(q);
+    // Faz a query buscando apenas onde perguntaid == "p02"
+    const q = query(respostasRef, where("perguntaId", "==", "p02"));
+    const querySnapshot = await getDocs(q);
 
-  if (querySnapshot.empty) {
-    console.log("Usuário ainda não respondeu a pergunta p02.");
-    return;
-  }
+    if (querySnapshot.empty) {
+        console.log("Usuário ainda não respondeu a pergunta p02.");
+        return;
+    }
 
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    console.log("Resposta da pergunta p02:", data.resposta);
+    querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        console.log("Resposta da pergunta p02:", data.resposta);
 
-    const fruta = data.resposta;
-if (receitas[fruta]) {
-  const receita = receitas[fruta];
-  document.getElementById("receita").innerHTML += `
+        const fruta = data.resposta;
+        if (receitas[fruta]) {
+            const receita = receitas[fruta];
+            document.getElementById("receita").innerHTML += `
     <h2>Receita: ${receita.titulo}</h2>
     <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
     <br><p><strong>Ingredientes:</strong><br>${receita.ingredientes}</p><br>
     <p><strong>Modo de preparo:</strong><br>${receita.preparo}</p>
   `;
-} else {
-  document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
-}
+        } else {
+            document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
+        }
 
-})};
-
-
-//Perguntas que precisam de select e suas respectivas respostas
-const perguntasComSelect = {
-    "2": [
-        "Maçã", "Banana", "Uva", "Laranja", "Morango", "Melancia", "Abacaxi", "Pera", "Mamão", "Manga",
-        "Kiwi", "Limão", "Coco", "Ameixa", "Cereja", "Goiaba", "Caqui", "Figo", "Maracujá", "Pêssego",
-        "Tangerina", "Abacate", "Framboesa", "Amora", "Graviola", "Jabuticaba"
-    ],
-    "3": [
-        "Cenoura", "Tomate", "Alface", "Brócolis", "Pepino", "Batata", "Batata-doce", "Abóbora", "Chuchu",
-        "Couve", "Espinafre", "Repolho", "Beterraba", "Vagem", "Ervilha", "Milho", "Quiabo", "Rabanete",
-        "Berinjela", "Pimentão", "Abobrinha", "Cebola", "Alho", "Salsão", "Aipo", "Mandioquinha"
-    ],
-    "8": ["Fazer doces", "Fazer salgados"],
-    "9": ["Lanches", "Refeições", "Sobremesas"],
+    })
 };
+
+
+
 
 //Gerador de perguntas, a cada pergunta gerada, uma curiosidade tambem é chamada
 
