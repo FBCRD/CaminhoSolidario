@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/imgs/logo.png">
+    <title>Alunos - Caminho Solidário</title>
+    <link rel="stylesheet" href="/css/style.css">
+
+</head>
+
+<body class="TelaInicial">
+
+
+    <nav class="navbarquest">
+        <div>
+            <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
+        </div>
+        <div>
+            <img class="logo" src="/imgs/logo.png" alt="">
+        </div>
+        <div>
+            <button id="btnSair" class="btnSair">Sair</button>
+        </div>
+    </nav>
+
+
+    <h1 style="font-size: large; margin-bottom: 10px;">Perguntas do quetionario</h1>
+    <div style="display: flex;
+   flex-direction: column;
+   align-items: center;">
+        <div class="table-container">
+            <button>Adicionar Pergunta</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Pergunta</th>
+                        <th>Opções</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaperguntas">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <footer class="footer-marista">
+        <img src="/imgs/centroSocial.png" alt="">
+    </footer>
+
+
+
+
+    <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <!-- arrumar css -->
+        <h2>Nova Receita</h2>
+        <form action="">
+            <label for="title">Título:</label><br>
+            <input type="text" id="title" name="title" required>
+            <br><br>
+            <label for="description">Descrição:</label><br>
+            <textarea id="description" name="description" rows="4" required></textarea><br>
+            <label for="description">Ingredientes:</label><br>
+            <textarea id="description" name="description" rows="4" required></textarea>
+            <br><br>
+            <label for="image">Imagem:</label><br>
+            <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required>
+            <br><br>
+            <button type="submit">Salvar</button>
+
+
+
+
+
+
+        </form>
+    </div>
+    <script type="module" src="/back/functionsAdm.js"></script>
+</body>
+
+</html>

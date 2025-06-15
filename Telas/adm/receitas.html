@@ -151,6 +151,55 @@
             font-size: 24px;
             cursor: pointer;
         }
+        .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.card-image {
+    width: 100%;
+    height: 180px;  /* Altura fixa */
+    object-fit: cover; /* Faz a imagem cobrir o espaço sem distorcer */
+}
+
+.card-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin: 12px;
+}
+
+.card-text {
+    font-size: 0.95em;
+    margin: 0 12px 12px 12px;
+    flex-grow: 1;
+}
+
+.edit-button {
+    margin: 0 12px 12px 12px;
+    padding: 8px 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-button:hover {
+    background-color: #2980b9;
+}
+
     </style>
 </head>
 
@@ -158,14 +207,14 @@
 
     <header>
         <div>
-      <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
-    </div>
-    <div>
-      <img class="logo" src="/imgs/logo.png" alt="">
-    </div>
-    <div>
-      <button id="btnSair" class="btnSair">Sair</button>
-    </div>
+            <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
+        </div>
+        <div>
+            <img class="logo" src="/imgs/logo.png" alt="">
+        </div>
+        <div>
+            <button id="btnSair" class="btnSair">Sair</button>
+        </div>
     </header>
 
     <main>
@@ -177,41 +226,11 @@
             <button class="add-button" onclick="abrirModal()">Adicionar Receita</button>
         </div>
 
-        <div class="grid">
-            <!-- Card -->
-            <div class="card">
-                <div class="image-placeholder">Imagem</div>
-                <div class="card-title">Title</div>
-                <div class="card-text">
-                    Body text for whatever you'd like to say. Add main takeaway points, quotes, anecdotes, or even a
-                    very very short story.
-                </div>
-                <button class="edit-button">Editar</button>
-            </div>
-
-            <!-- Duplique os cards conforme necessário -->
-            <div class="card">
-                <div class="image-placeholder">Imagem</div>
-                <div class="card-title">Title</div>
-                <div class="card-text">
-                    Body text for whatever you'd like to say. Add main takeaway points, quotes, anecdotes, or even a
-                    very very short story.
-                </div>
-                <button class="edit-button">Editar</button>
-            </div>
-            <div class="card">
-                <div class="image-placeholder">Imagem</div>
-                <div class="card-title">Title</div>
-                <div class="card-text">
-                    Body text for whatever you'd like to say. Add main takeaway points, quotes, anecdotes, or even a
-                    very very short story.
-                </div>
-                <button class="edit-button">Editar</button>
-            </div>
-
-            <!-- ... -->
-
+        <div id="cardsReceitas" class="grid">
+            
+            
         </div>
+
         <!-- Modal -->
         <div id="modal" class="modal">
             <div class="modal-content">
@@ -241,6 +260,7 @@
             </div>
         </div>
     </main>
+    <script type="module" src="/back/functionsAdm.js"></script>
     <script>
         function abrirModal() {
             document.getElementById('modal').style.display = 'block';

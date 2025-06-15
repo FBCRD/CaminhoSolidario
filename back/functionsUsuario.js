@@ -278,6 +278,9 @@ async function telaFinal() {
     })
 };
 
+function redlogin(){
+    
+}
 
 
 
@@ -286,7 +289,7 @@ async function telaFinal() {
 
 //As perguntas e as curiosidades são inseridas atraves do banco de dados, portanto por enquanto são estaticas
 async function gerarPerguntas() {
-    const perguntasRef = doc(db, "perguntas", "p0" + numeroPergunta);
+    const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
     const docSnap = await getDoc(perguntasRef);
     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
     const curiosidadesSnap = await getDoc(curiosidadesRef);
@@ -308,7 +311,7 @@ async function gerarPerguntas() {
 
         let novoCampo;
 
-        if (perguntasComSelect[perguntaId]) {
+        if (pergunta.select) {
             // Cria select se for pergunta
             novoCampo = document.createElement("select");
             novoCampo.id = "resposta";
@@ -323,7 +326,7 @@ async function gerarPerguntas() {
             optionDefault.selected = true;
             novoCampo.appendChild(optionDefault);
 
-            perguntasComSelect[perguntaId].forEach(opcao => {
+            pergunta.opcoes.forEach(opcao => {
                 const option = document.createElement("option");
                 option.value = opcao;
                 option.textContent = opcao;

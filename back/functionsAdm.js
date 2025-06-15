@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
         btns();
-
     }
     else if (pagina === "respostasadm.html") {
         const urlParams = new URLSearchParams(window.location.search);
@@ -60,12 +59,15 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("ID do usuário:", usuarioId);
         carregarRespostas(usuarioId);
         btns();
-
-
-
-
-    } else {
-        console.log("Página não encontrada!" + pagina);
+    }
+    else if(pagina === "perguntas.html"){
+        listarPerguntas();
+    }else if (pagina === "receitas.html"){
+        console.log("Página de receitas");
+        listarReceitas();
+    }
+    else{
+        console.error("Página não reconhecida:", pagina);
     }
 
 });
@@ -231,17 +233,81 @@ async function carregarRespostas(usuarioId) {
 
 }
 
+async function listarPerguntas() {
+    const perguntasSnap = await getDocs(collection(db, "perguntas"));
+    perguntasSnap.forEach((doc) => {
+        const pergunta = doc.data();
+        console.log("Pergunta: ", pergunta.texto);
+        document.getElementById("tabelaperguntas").innerHTML += `<tr>
+            <td>${pergunta.texto}</td>
+            <td>
+                <button class="btn" onclick = "verRespostas('${doc.id}')" >
+                    Editar 
+                </button>
+                <button class="btn" onclick = "excluir('${doc.id}')" >
+                    Excluir  
+                </button>
+            </td>
+        </tr>`;
+    });
+}
 
 
 
+function adicionarPergunta(pergunta) {
+    const perguntasRef = collection(db, "perguntas");
+    addDoc(perguntasRef, {
+        texto: pergunta
+    })
+        .then(() => {
+            console.log("Pergunta adicionada com sucesso!");
+        })
+        .catch((error) => {
+            console.error("Erro ao adicionar pergunta: ", error);
+        });
+}
+
+function editarPergunta(perguntaId, novaPergunta) {
+    const perguntaRef = doc(db, "perguntas", perguntaId);
+    updateDoc(perguntaRef, {
+        texto: novaPergunta
+    })
+        .then(() => {
+            console.log("Pergunta editada com sucesso!");
+        })
+        .catch((error) => {
+            console.error("Erro ao editar pergunta: ", error);
+        });
+}
+
+function excluirPergunta(perguntaId) {
+    const perguntaRef = doc(db, "perguntas", perguntaId);
+    deleteDoc(perguntaRef)
+        .then(() => {
+            console.log("Pergunta excluída com sucesso!");
+        })
+        .catch((error) => {
+            console.error("Erro ao excluir pergunta: ", error);
+        });
+}
+async function listarReceitas(){
+    const receitasSnap = await getDocs(collection(db, "receitas"));
+    receitasSnap.forEach((doc) => {
+        const receita = doc.data();
+        console.log("Receita: ", receita.titulo);
+        document.getElementById("cardsReceitas").innerHTML += `
+       <div class="card">
+                <img src="${receita.imagem}" alt="Imagem da Receita"
+                    class="card-image">
+                <div class="card-title">${receita.titulo}</div>
+                <div class="card-text">
+                    Breve descrição da receita. Pode incluir os principais ingredientes ou o modo de preparo resumido.
+                </div>
+                <button class="edit-button">Editar</button>
+            </div>
+        `;
+    });
 
 
 
-
-
-
-
-
-
-
-
+ }
