@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
     if (pagina === "index.html") {
         cadastroUsuario();
+        redlogin();
     }
     else if (pagina === "home.html") {
         iniciarHome();
@@ -46,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (pagina === "loginusuario.html") {
         console.log("loginUsuario");
         loginUsuario();
+        redCad();
     }
     else {
         console.log("Página não encontrada!" + pagina);
@@ -170,18 +172,43 @@ async function iniciarHome() {
 
 let numeroPergunta = 1;
 
+async function buscarProgresso(usuarioId) {
+    const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
+    const snapshot = await getDocs(respostasRef);
+    const perguntasRef = doc(db, "perguntas");
+    const perguntasSnap = await getDoc(perguntasRef);
+      
+    const totalperguntas = perguntasSnap.size; // Contagem de perguntas no banco de dados
+    const totalRespondidas = snapshot.size;  // Contagem de documentos dentro de "respostas"
+    console.log(`Total de perguntas: ${totalperguntas}`);
+    console.log(`Total de perguntas respondidas: ${totalRespondidas}`);
+    if(totalRespondidas >= totalperguntas) {
+        console.log("Todas as perguntas já foram respondidas.");
+        window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+        return;
+
+    }
+
+    if (totalRespondidas > 0) {
+        numeroPergunta = totalRespondidas + 1;  // Próxima pergunta
+        console.log(`Usuário já respondeu ${totalRespondidas} perguntas. Indo para a pergunta ${numeroPergunta}`);
+    } else {
+        console.log("Usuário ainda não respondeu nenhuma pergunta.");
+    }
+}
 
 
-//Função para a tela de questionario
-//gera perguntas, coleta respostas, botão sair e botão voltar
 async function TelaQuestionario() {
     const usuarioId = localStorage.getItem("usuarioId");
     const form = document.getElementById("formQuestionario");
-    //verifica se o usuário está logado
+
     if (!usuarioId) {
-        console.alert("Usuário não encontrado!");
+        alert("Usuário não encontrado!");
         return;
     }
+
+    // Verificar onde o usuário parou
+    await buscarProgresso(usuarioId);
 
     await gerarPerguntas();
 
@@ -189,23 +216,24 @@ async function TelaQuestionario() {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             const resposta = document.getElementById("resposta").value;
-            //Fazer validação do campo de resposta
+
             if (resposta === "") {
                 alert("Preencha todos os campos!");
                 return;
             }
-            //faz a ligação da resposta com a pergunta
+
             try {
                 const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
                 await addDoc(respostaRef, {
-                    perguntaId: "p0" + numeroPergunta,
+                    perguntaId: "pergunta" + numeroPergunta,
                     resposta: resposta
                 });
 
                 console.log("Resposta enviada com sucesso!");
 
                 numeroPergunta++;
-                form.reset(); // Limpa o formulário
+                form.reset();
+
                 const temMaisPerguntas = await gerarPerguntas();
 
                 if (!temMaisPerguntas) {
@@ -216,9 +244,9 @@ async function TelaQuestionario() {
             }
         });
     }
+
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
-        // Limpa o nome do usuário do localStorage
         localStorage.removeItem("usuarioId");
         window.location.href = "index.html";
         console.log("Usuário deslogado com sucesso!");
@@ -228,10 +256,68 @@ async function TelaQuestionario() {
         event.preventDefault();
         history.back();
     });
+}
+
+//Função para a tela de questionario
+//gera perguntas, coleta respostas, botão sair e botão voltar
+// async function TelaQuestionario() {
+//     const usuarioId = localStorage.getItem("usuarioId");
+//     const form = document.getElementById("formQuestionario");
+//     //verifica se o usuário está logado
+//     if (!usuarioId) {
+//         console.alert("Usuário não encontrado!");
+//         return;
+//     }
+
+//     await gerarPerguntas();
+
+//     if (form) {
+//         form.addEventListener("submit", async function (event) {
+//             event.preventDefault();
+//             const resposta = document.getElementById("resposta").value;
+//             //Fazer validação do campo de resposta
+//             if (resposta === "") {
+//                 alert("Preencha todos os campos!");
+//                 return;
+//             }
+//             //faz a ligação da resposta com a pergunta
+//             try {
+//                 const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
+//                 await addDoc(respostaRef, {
+//                     perguntaId: "pergunta" + numeroPergunta,
+//                     resposta: resposta
+//                 });
+
+//                 console.log("Resposta enviada com sucesso!");
+
+//                 numeroPergunta++;
+//                 form.reset(); // Limpa o formulário
+//                 const temMaisPerguntas = await gerarPerguntas();
+
+//                 if (!temMaisPerguntas) {
+//                     window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+//                 }
+//             } catch (error) {
+//                 console.error("Erro ao adicionar o documento: ", error);
+//             }
+//         });
+//     }
+//     document.getElementById("btnSair").addEventListener("click", async function (event) {
+//         event.preventDefault();
+//         // Limpa o nome do usuário do localStorage
+//         localStorage.removeItem("usuarioId");
+//         window.location.href = "index.html";
+//         console.log("Usuário deslogado com sucesso!");
+//     });
+
+//     document.getElementById("btnVoltar").addEventListener("click", async function (event) {
+//         event.preventDefault();
+//         history.back();
+//     });
 
 
 
-};
+// };
 
 
 
@@ -240,54 +326,67 @@ async function TelaQuestionario() {
 async function telaFinal() {
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
-        // Limpa o nome do usuário do localStorage
         localStorage.removeItem("usuarioId");
         window.location.href = "index.html";
         console.log("Usuário deslogado com sucesso!");
     });
+
     const idusuario = localStorage.getItem("usuarioId");
-    console.log(idusuario)
+    console.log(idusuario);
+
     const respostasRef = collection(db, "usuarios", idusuario, "respostas");
 
-    // Faz a query buscando apenas onde perguntaid == "p02"
-    const q = query(respostasRef, where("perguntaId", "==", "p02"));
-    const querySnapshot = await getDocs(q);
+    // Busca apenas a resposta da pergunta2
+    const pergunta2 = query(respostasRef, where("perguntaId", "==", "pergunta2"));
+    const pergunta2Snapshot = await getDocs(pergunta2);
 
-    if (querySnapshot.empty) {
-        console.log("Usuário ainda não respondeu a pergunta p02.");
+    if (pergunta2Snapshot.empty) {
+        console.log("Usuário ainda não respondeu a pergunta2.");
         return;
     }
 
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log("Resposta da pergunta p02:", data.resposta);
+    pergunta2Snapshot.forEach(async (docRes) => {
+        const data = docRes.data();
+        console.log("Resposta da pergunta2:", data.resposta);
 
         const fruta = data.resposta;
-        if (receitas[fruta]) {
-            const receita = receitas[fruta];
-            document.getElementById("receita").innerHTML += `
-    <h2>Receita: ${receita.titulo}</h2>
-    <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
-    <br><p><strong>Ingredientes:</strong><br>${receita.ingredientes}</p><br>
-    <p><strong>Modo de preparo:</strong><br>${receita.preparo}</p>
-  `;
+
+        if (fruta) {
+            const receitaRef = doc(db, "receitas", fruta);
+            const receitaSnap = await getDoc(receitaRef);
+
+            if (receitaSnap.exists()) {
+                const receita = receitaSnap.data();
+
+                document.getElementById("receita").innerHTML += `
+                    <h2>Receita: ${receita.titulo}</h2>
+                    <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
+                    <br><p><strong>Ingredientes:</strong><br>${receita.ingredientes}</p><br>
+                    <p><strong>Modo de preparo:</strong><br>${receita.preparo}</p>
+                `;
+            } else {
+                document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
+            }
         } else {
             document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
         }
-
-    })
-};
-
-function redlogin(){
-    
+    });
 }
 
 
+function redlogin() {
+    document.getElementById("redlogin").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "loginUsuario.html";
+    });
+}
+function redCad() {
+    document.getElementById("redCad").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "index.html";
+    });
+}
 
-//Gerador de perguntas, a cada pergunta gerada, uma curiosidade tambem é chamada
-
-
-//As perguntas e as curiosidades são inseridas atraves do banco de dados, portanto por enquanto são estaticas
 async function gerarPerguntas() {
     const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
     const docSnap = await getDoc(perguntasRef);
@@ -301,18 +400,14 @@ async function gerarPerguntas() {
         document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
         document.getElementById("perguntasquest").textContent = pergunta.texto;
 
-        const perguntaId = numeroPergunta.toString();
-        const campoResposta = document.getElementById("resposta");
-
-        // Remove o campo anterior (textarea ou select)
-        if (campoResposta) {
-            campoResposta.remove();
+        const campoRespostaAntigo = document.getElementById("resposta");
+        if (campoRespostaAntigo) {
+            campoRespostaAntigo.remove();
         }
 
         let novoCampo;
 
         if (pergunta.select) {
-            // Cria select se for pergunta
             novoCampo = document.createElement("select");
             novoCampo.id = "resposta";
             novoCampo.name = "resposta";
@@ -334,7 +429,6 @@ async function gerarPerguntas() {
             });
 
         } else {
-            // Cria textarea se a resposta for por extenso
             novoCampo = document.createElement("textarea");
             novoCampo.id = "resposta";
             novoCampo.name = "resposta";
@@ -352,6 +446,77 @@ async function gerarPerguntas() {
         return false;
     }
 }
+
+
+
+//Gerador de perguntas, a cada pergunta gerada, uma curiosidade tambem é chamada
+
+
+//As perguntas e as curiosidades são inseridas atraves do banco de dados, portanto por enquanto são estaticas
+// async function gerarPerguntas() {
+//     const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
+//     const docSnap = await getDoc(perguntasRef);
+//     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
+//     const curiosidadesSnap = await getDoc(curiosidadesRef);
+
+//     if (docSnap.exists()) {
+//         const pergunta = docSnap.data();
+//         const curiosidade = curiosidadesSnap.data();
+
+//         document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
+//         document.getElementById("perguntasquest").textContent = pergunta.texto;
+
+//         const perguntaId = numeroPergunta.toString();
+//         const campoResposta = document.getElementById("resposta");
+
+//         // Remove o campo anterior (textarea ou select)
+//         if (campoResposta) {
+//             campoResposta.remove();
+//         }
+
+//         let novoCampo;
+
+//         if (pergunta.select) {
+//             // Cria select se for pergunta
+//             novoCampo = document.createElement("select");
+//             novoCampo.id = "resposta";
+//             novoCampo.name = "resposta";
+//             novoCampo.className = "select-personalizado";
+//             novoCampo.required = true;
+
+//             const optionDefault = document.createElement("option");
+//             optionDefault.value = "";
+//             optionDefault.text = "Selecione uma opção";
+//             optionDefault.disabled = true;
+//             optionDefault.selected = true;
+//             novoCampo.appendChild(optionDefault);
+
+//             pergunta.opcoes.forEach(opcao => {
+//                 const option = document.createElement("option");
+//                 option.value = opcao;
+//                 option.textContent = opcao;
+//                 novoCampo.appendChild(option);
+//             });
+
+//         } else {
+//             // Cria textarea se a resposta for por extenso
+//             novoCampo = document.createElement("textarea");
+//             novoCampo.id = "resposta";
+//             novoCampo.name = "resposta";
+//             novoCampo.className = "inputs-questionario";
+//             novoCampo.placeholder = "Responda aqui";
+//             novoCampo.required = true;
+//         }
+
+//         const form = document.getElementById("formQuestionario");
+//         form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
+
+//         return true;
+//     } else {
+//         console.log("Não há mais perguntas!");
+//         return false;
+//     }
+// }
 
 
 
