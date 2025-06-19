@@ -127,85 +127,213 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 100;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
         }
 
         .modal-content {
             background-color: #fff;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 8px;
+            margin: 5% auto;
+            padding: 30px 25px;
+            border-radius: 12px;
             width: 90%;
             max-width: 500px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
         }
+
+        .modal-content img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            
+            /* Começa escondida, só mostra quando tiver URL */
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            color: #aaa;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #163965;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .modal-content input[type="text"],
+        .modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .modal-content textarea {
+            resize: vertical;
+        }
+
+        .modal-content button[type="submit"] {
+            background-color: #163965;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button[type="submit"]:hover {
+            background-color: #0f2a4c;
+        }
+
 
         .close {
             float: right;
             font-size: 24px;
             cursor: pointer;
         }
+
         .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
-    padding: 16px;
-}
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            padding: 16px;
+        }
 
-.card {
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-}
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
 
-.card-image {
-    width: 100%;
-    height: 180px;  /* Altura fixa */
-    object-fit: cover; /* Faz a imagem cobrir o espaço sem distorcer */
-}
+        .card-image {
+            width: 100%;
+            height: 180px;
+            /* Altura fixa */
+            object-fit: cover;
+            /* Faz a imagem cobrir o espaço sem distorcer */
+        }
 
-.card-title {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin: 12px;
-}
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 12px;
+        }
 
-.card-text {
-    font-size: 0.95em;
-    margin: 0 12px 12px 12px;
-    flex-grow: 1;
-}
+        .card-text {
+            font-size: 0.95em;
+            margin: 0 12px 12px 12px;
+            flex-grow: 1;
+        }
 
-.edit-button {
-    margin: 0 12px 12px 12px;
-    padding: 8px 12px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
+        .edit-button {
+            margin: 0 12px 12px 12px;
+            padding: 8px 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
-.edit-button:hover {
-    background-color: #2980b9;
-}
+        .edit-button:hover {
+            background-color: #2980b9;
+        }
 
+        .navbarquest {
+            justify-content: space-between;
+            display: flex;
+
+        }
+
+        .btnVoltar {
+            color: white;
+            background-color: black;
+            border-radius: 10px;
+            border: none;
+            width: auto;
+            margin-left: 5px;
+        }
+
+        .btnSair {
+            color: white;
+            background-color: black;
+            border-radius: 10px;
+            border: none;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .logo {
+            max-width: 200px;
+            width: 80%;
+            height: auto;
+            margin-bottom: 1.5rem;
+        }
+
+        button {
+            width: 150px;
+            padding: 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
 
-    <header>
+    <nav class="navbarquest">
         <div>
             <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
         </div>
@@ -215,7 +343,7 @@
         <div>
             <button id="btnSair" class="btnSair">Sair</button>
         </div>
-    </header>
+    </nav>
 
     <main>
         <div class="header-content">
@@ -223,60 +351,59 @@
                 <h1>Receitas</h1>
                 <p>Subheading</p>
             </div>
-            <button class="add-button" onclick="abrirModal()">Adicionar Receita</button>
+
         </div>
 
         <div id="cardsReceitas" class="grid">
-            
-            
+
+
         </div>
 
         <!-- Modal -->
+
         <div id="modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModal()">&times;</span>
-                <!-- arrumar css -->
-                <h2>Nova Receita</h2>
-                <form action="">
-                    <label for="title">Título:</label><br>
-                    <input type="text" id="title" name="title" required>
+                <h2>Editar Receita</h2>
+                <form id="formReceita">
+                    <!-- <label for="titulo">Título:</label><br>
+                    <input type="text" id="titulo" name="titulo" required>
                     <br><br>
-                    <label for="description">Descrição:</label><br>
-                    <textarea id="description" name="description" rows="4" required></textarea><br>
-                    <label for="description">Ingredientes:</label><br>
-                    <textarea id="description" name="description" rows="4" required></textarea>
+                    <label for="descricao">Descrição:</label><br>
+                    <textarea id="descricao" name="descricao" rows="4" required></textarea><br>
+                    <label for="mododepreparo">Modo de preparo:</label><br>
+                    <textarea id="mododepreparo" name="mododepreparo" rows="4" required></textarea><br>
+                    <label for="ingredientes">Ingredientes:</label><br>
+                    <textarea id="ingredientes" name="ingredientes" rows="4" required></textarea>
                     <br><br>
                     <label for="image">Imagem:</label><br>
+                    <img src="" alt="">
                     <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required>
                     <br><br>
-                    <button type="submit">Salvar</button>
-
-
-
-
-
-
+                    <button type="submit">Salvar</button> -->
                 </form>
             </div>
         </div>
+
+
     </main>
     <script type="module" src="/back/functionsAdm.js"></script>
     <script>
-        function abrirModal() {
-            document.getElementById('modal').style.display = 'block';
-        }
+
 
         function fecharModal() {
             document.getElementById('modal').style.display = 'none';
+            
+
         }
 
         // Fechar clicando fora do modal
-        window.onclick = function (event) {
-            const modal = document.getElementById('modal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
+        // window.onclick = function (event) {
+        //     const modal = document.getElementById('modal');
+        //     if (event.target == modal) {
+        //         modal.style.display = "none";
+        //     }
+        // }
     </script>
 </body>
 

@@ -3,7 +3,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
 
 
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
             } else {
-                
+
                 window.location.href = "TelaLoginAdm.html";
             }
         });
@@ -60,13 +60,15 @@ document.addEventListener("DOMContentLoaded", function () {
         carregarRespostas(usuarioId);
         btns();
     }
-    else if(pagina === "perguntas.html"){
+    else if (pagina === "perguntas.html") {
         listarPerguntas();
-    }else if (pagina === "receitas.html"){
+        btns();
+    } else if (pagina === "receitas.html") {
         console.log("Página de receitas");
         listarReceitas();
+        btns();
     }
-    else{
+    else {
         console.error("Página não reconhecida:", pagina);
     }
 
@@ -297,7 +299,84 @@ function excluirPergunta(perguntaId) {
             console.error("Erro ao excluir pergunta: ", error);
         });
 }
-async function listarReceitas(){
+
+window.abrirModal = async function (receitaid) {
+    document.getElementById('modal').style.display = 'block';
+
+
+
+
+
+    const receitaRef = doc(db, "receitas", receitaid);
+    const receitaSnap = await getDoc(receitaRef);
+    if (receitaSnap.exists()) {
+        const receita = receitaSnap.data();
+
+
+        document.getElementById("formReceita").innerHTML = `
+                   <label for="titulo">Título:</label><br>
+                   <input type="text" id="titulo" name="titulo" placeholder="titulo da receita" required value="${receita.titulo}">
+                   <br><br>
+                   <label for="descricao">Descrição:</label><br>
+                   <textarea id="descricao" name="descricao" rows="4" required>${receita.descricao}</textarea><br>
+                   <label for="mododepreparo">Modo de preparo:</label><br>
+                   <textarea id="mododepreparo" name="mododepreparo" rows="4" required>${receita.preparo}</textarea><br>
+                   <label for="ingredientes">Ingredientes:</label><br>
+                   <textarea id="ingredientes" name="ingredientes" rows="4" required>${receita.ingredientes}</textarea>
+                   <br><br>
+                   <label for="image">Imagem:</label><br>
+                   <img src="${receita.imagem}" alt="">
+                   <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required value="${receita.imagem}">
+                   <br><br>
+                   
+                   <button id="salvarReceita" type="submit">Salvar</button>
+       `;
+
+        document.getElementById("salvarReceita").addEventListener("click", async function (event) {
+            event.preventDefault();
+            const titulo = document.getElementById("titulo").value;
+            const descricao = document.getElementById("descricao").value;
+            const mododepreparo = document.getElementById("mododepreparo").value;
+            const ingredientes = document.getElementById("ingredientes").value;
+            const imglink = document.getElementById("textImage").value;
+
+            try {
+                await updateDoc(receitaRef, {
+                    titulo: titulo,
+                    ingredientes: descricao,
+                    preparo: mododepreparo,
+                    ingredientes: ingredientes,
+                    imagem: imglink
+                });
+                console.log("Documento atualizado com sucesso");
+                location.reload();
+            } catch (error) {
+                console.error("Erro ao atualizar o documento", error);
+            }
+        })
+
+    } else {
+        console.log("Documento não encontrado!");
+    }
+
+
+    // titulo.innerHTML = receita.titulo;
+    // descricao.innerHTML = receita.descricao;
+    // mododepreparo.innerHTML = receita.mododepreparo;
+    // ingredientes.innerHTML = receita.ingredientes;
+    // imglink.innerHTML = receita.imagem
+    // updateDoc(receitaRef, {
+
+    // })
+};
+
+
+
+
+
+
+
+async function listarReceitas() {
     const receitasSnap = await getDocs(collection(db, "receitas"));
     receitasSnap.forEach((doc) => {
         const receita = doc.data();
@@ -310,11 +389,13 @@ async function listarReceitas(){
                 <div class="card-text">
                     Breve descrição da receita. Pode incluir os principais ingredientes ou o modo de preparo resumido.
                 </div>
-                <button class="edit-button">Editar</button>
+                <button class="edit-button" onclick= "abrirModal('${doc.id}')" >Editar</button>
             </div>
         `;
     });
 
 
 
- }
+}
+
+
