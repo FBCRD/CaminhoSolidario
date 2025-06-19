@@ -147,7 +147,7 @@ async function iniciarHome() {
     // Verifica se o usuário está logado
     document.getElementById("sair").addEventListener("click", async function (event) {
         event.preventDefault();
-        // Limpa o nome do usuário do localStorage
+        
 
         window.location.href = "index.html";
         console.log("Usuário deslogado com sucesso!");
@@ -166,18 +166,20 @@ async function iniciarHome() {
         alert("Usuário não encontrado!");
         localStorage.removeItem("usuarioId");
         window.location.href = "index.html";
-        window.location.href = "index.html";
+        
     }
 }
 
-let numeroPergunta = 1;
+let numeroPergunta = 0;
 
 async function buscarProgresso(usuarioId) {
     const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
     const snapshot = await getDocs(respostasRef);
-    const perguntasRef = doc(db, "perguntas");
-    const perguntasSnap = await getDoc(perguntasRef);
-      
+    
+    const perguntasRef = collection(db, "perguntas");
+    const perguntasSnap = await getDocs(perguntasRef);
+    
+    
     const totalperguntas = perguntasSnap.size; // Contagem de perguntas no banco de dados
     const totalRespondidas = snapshot.size;  // Contagem de documentos dentro de "respostas"
     console.log(`Total de perguntas: ${totalperguntas}`);
@@ -208,8 +210,8 @@ async function TelaQuestionario() {
     }
 
     // Verificar onde o usuário parou
+    console.log("entrou")
     await buscarProgresso(usuarioId);
-
     await gerarPerguntas();
 
     if (form) {
@@ -388,6 +390,7 @@ function redCad() {
 }
 
 async function gerarPerguntas() {
+    console.log("Gerando pergunta número: " + numeroPergunta);
     const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
     const docSnap = await getDoc(perguntasRef);
     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);

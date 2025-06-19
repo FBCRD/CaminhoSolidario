@@ -138,7 +138,14 @@ function HomeAdm() {
 
 
     });
-
+    document.getElementById("btnReceitas").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "receitas.html";
+    });
+    document.getElementById("btnPerguntas").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "perguntas.html";
+    });
 
 
 }
