@@ -7,7 +7,79 @@
     <link rel="icon" type="image/png" href="/imgs/logo.png">
     <title>Alunos - Caminho Solidário</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: black;
+        }
 
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #163965;
+        }
+
+        .modal-content label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .modal-content input,
+        .modal-content select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .modal-content button {
+            background-color: #163965;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-content button:hover {
+            background-color: #0f2a4c;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+    </style>
 </head>
 
 <body class="TelaInicial">
@@ -31,7 +103,7 @@
    flex-direction: column;
    align-items: center;">
         <div class="table-container">
-            <button>Adicionar Pergunta</button>
+            <button onclick="abrirModalPergunta()">Adicionar Pergunta</button>
             <table>
                 <thead>
                     <tr>
@@ -77,7 +149,56 @@
 
         </form>
     </div>
+    <!-- Modal Nova Pergunta -->
+    <div id="modalPergunta" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalPergunta()">&times;</span>
+            <h2>Nova Pergunta</h2>
+            <form id="formPergunta">
+                <label for="perguntaTexto">Pergunta:</label>
+                <input type="text" id="perguntaTexto" name="perguntaTexto" placeholder="Digite a pergunta" required>
+
+                <label for="tipoPergunta">Tipo da Pergunta:</label>
+                <select id="tipoPergunta" name="tipoPergunta" required>
+                    <option value="">Selecione o tipo</option>
+                    <option value="texto">Resposta em Texto</option>
+                    <option value="multipla">Múltipla Escolha</option>
+                    <option value="unica">Escolha Única</option>
+                </select>
+
+                <button type="submit">Salvar Pergunta</button>
+            </form>
+        </div>
+    </div>
+
     <script type="module" src="/back/functionsAdm.js"></script>
+    <script>
+        function abrirModalPergunta() {
+            document.getElementById('modalPergunta').style.display = 'block';
+        }
+
+        function fecharModalPergunta() {
+            document.getElementById('modalPergunta').style.display = 'none';
+        }
+
+        // Fecha o modal clicando fora
+        window.onclick = function (event) {
+            const modal = document.getElementById('modalPergunta');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+
+        // Exemplo de ação ao salvar a pergunta (você adapta conforme salvar no Firestore ou outro backend)
+        document.getElementById('formPergunta').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const pergunta = document.getElementById('perguntaTexto').value;
+            const tipo = document.getElementById('tipoPergunta').value;
+            console.log("Nova Pergunta:", pergunta, "Tipo:", tipo);
+            fecharModalPergunta();
+            // Aqui você pode chamar sua função de salvar no banco
+        });
+    </script>
 </body>
 
 </html>
