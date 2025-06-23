@@ -1,7 +1,6 @@
 // Configuração do Firebase
 //Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getDoc, doc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
@@ -20,7 +19,6 @@ const firebaseConfig = {
 
 // Incializa o Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 console.log("Firebase inicializado com sucesso!");
 // Inicializa o Firestore (banco de dados)
 const db = getFirestore(app);
@@ -63,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
     else if (pagina === "perguntas.html") {
         listarPerguntas();
         btns();
+        adicionarPergunta();
     } else if (pagina === "receitas.html") {
         console.log("Página de receitas");
         listarReceitas();
@@ -160,6 +159,7 @@ window.verRespostas = function (usuarioId) {
 //Função que se encontra na tela onde o ADM pode ver os usuarios que responderam, serve para excluir o usuario
 window.excluir = async function (usuarioId) {
     //no firebase primeiro é necessario excluir as subcoleções de um documento antes de exclui-lo de fato, abaixo de forma recursiva ele exclui as subcoleções para depois excluir o usuario
+    console.log("Excluindo usuário com ID:", usuarioId);
     const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
     const snapshot = await getDocs(respostasRef);
 
@@ -192,11 +192,6 @@ async function gerarUsuarios() {
                 </button>
             </td>
         </tr>`;
-
-
-
-
-
     });
 }
 
@@ -242,6 +237,107 @@ async function carregarRespostas(usuarioId) {
 
 }
 
+window.excluirPergunta = async function (perguntaId) {
+    const perguntaRef = doc(db, "perguntas", perguntaId);
+    deleteDoc(perguntaRef)
+        .then(() => {
+            console.log("Pergunta excluída com sucesso!");
+            location.reload(); // Atualiza a página para refletir a exclusão
+        })
+        .catch((error) => {
+            console.error("Erro ao excluir pergunta: ", error);
+        });
+
+}
+//Editar receita
+window.editarPergunta = async function (perguntaId) {
+    const perguntaRef = doc(db, "perguntas", perguntaId);
+    const perguntaSnap = await getDoc(perguntaRef);
+
+    const pergunta = perguntaSnap.data();
+    document.getElementById('modalPerguntaEditar').style.display = 'block';
+
+    document.getElementById('formPerguntaEditar').innerHTML = `
+        <label for="perguntaTexto">Pergunta:</label>
+        <input type="text" id="perguntaTextoeditar" name="perguntaTexto" placeholder="Digite a pergunta" required value="${pergunta.texto}">
+        
+        <label for="tipoPergunta">Tipo da Pergunta:</label>
+        <select id="tipoPerguntaeditar" name="tipoPergunta" required>
+        <option value="">Selecione o tipo</option>
+        <option value="texto">Resposta em Texto</option>
+        <option value="select">Múltipla Escolha</option>
+        
+        </select>
+        <div id="opcoesMultiplaeditar" style="display:none; margin-top: 10px;">
+        <label>Opções:</label>
+        <div id="listaOpcoeseditar">
+        ${pergunta.opcoes.map((opcao, index) => `
+            <input type="text" name="opcao${index}" value="${opcao}" placeholder="Opção ${index + 1}" required>
+        `).join('')}
+        </div>
+        <button type="button" onclick="adicionarOpcao()">Adicionar Opção</button>
+        </div>
+        
+        <button type="submit">Salvar Pergunta</button>`;
+
+    document.getElementById('tipoPerguntaeditar').addEventListener('change', function () {
+        console.log("Tipo de pergunta selecionado:", this.value);
+        const tipo = this.value;
+        const divOpcoes = document.getElementById('opcoesMultiplaeditar');
+        const listaOpcoes = document.getElementById('listaOpcoes');
+
+        if (tipo === 'select') {
+            console.log("Exibindo opções para múltipla escolha");
+            divOpcoes.style.display = 'block';
+            listaOpcoes.innerHTML = ''; // Limpa caso já tenha algo
+            adicionarOpcao(); // Já começa com um campo de opção
+        } else {
+            divOpcoes.style.display = 'none';
+            listaOpcoes.innerHTML = '';
+        }
+    });
+    const textoPergunta = document.getElementById('perguntaTextoeditar');
+    const tipoPergunta = document.getElementById('tipoPerguntaeditar');
+
+    try {
+        document.getElementById('formPerguntaEditar').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            updateDoc(perguntaRef, {
+                texto: textoPergunta.value,
+                tipo: tipoPergunta.value,
+                opcoes: Array.from(document.querySelectorAll('#listaOpcoeseditar input')).map(input => input.value)
+            })
+            console.log("Pergunta atualizada com sucesso!");
+            // Atualiza a página para refletir as mudanças
+            location.reload();
+        })
+    } catch (error) {
+        console.error("Erro ao atualizar pergunta:", error);
+    }
+
+}
+
+
+
+function adicionarOpcao() {
+    const listaOpcoes = document.getElementById('listaOpcoeseditar');
+    const index = listaOpcoes.children.length + 1;
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.name = 'opcao' + index;
+    input.placeholder = 'Opção ' + index;
+    input.style.marginBottom = '5px';
+    input.required = true;
+
+    listaOpcoes.appendChild(input);
+}
+
+
+
+
+
 async function listarPerguntas() {
     const perguntasSnap = await getDocs(collection(db, "perguntas"));
     perguntasSnap.forEach((doc) => {
@@ -250,63 +346,47 @@ async function listarPerguntas() {
         document.getElementById("tabelaperguntas").innerHTML += `<tr>
             <td>${pergunta.texto}</td>
             <td>
-                <button class="btn" onclick = "verRespostas('${doc.id}')" >
+                <button class="btn" onclick = "editarPergunta('${doc.id}')" >
                     Editar 
                 </button>
-                <button class="btn" onclick = "excluir('${doc.id}')" >
+                <button class="btn" onclick = "excluirPergunta('${doc.id}')" >
                     Excluir  
                 </button>
             </td>
         </tr>`;
     });
+
 }
 
 
 
-function adicionarPergunta(pergunta) {
-    const perguntasRef = collection(db, "perguntas");
-    addDoc(perguntasRef, {
-        texto: pergunta
-    })
-        .then(() => {
-            console.log("Pergunta adicionada com sucesso!");
-        })
-        .catch((error) => {
-            console.error("Erro ao adicionar pergunta: ", error);
+function adicionarPergunta() {
+    document.getElementById('formPergunta').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const pergunta = document.getElementById('perguntaTexto').value;
+        const tipo = document.getElementById('tipoPergunta').value;
+
+        console.log("Nova Pergunta:", pergunta, "Tipo:", tipo);
+        fecharModalPergunta();
+        // Aqui você pode chamar sua função de salvar no banco
+        await addDoc(collection(db, "perguntas"), {
+            texto: pergunta,
+            tipo: tipo,
+            opcoes: Array.from(document.querySelectorAll('#listaOpcoes input')).map(input => input.value)
+        }).then(() => {
+            console.log("Pergunta salva com sucesso!");
+            // Atualizar a tabela de perguntas
+            location.reload();
+        }).catch(error => {
+            console.error("Erro ao salvar pergunta:", error);
         });
+    });
 }
 
-function editarPergunta(perguntaId, novaPergunta) {
-    const perguntaRef = doc(db, "perguntas", perguntaId);
-    updateDoc(perguntaRef, {
-        texto: novaPergunta
-    })
-        .then(() => {
-            console.log("Pergunta editada com sucesso!");
-        })
-        .catch((error) => {
-            console.error("Erro ao editar pergunta: ", error);
-        });
-}
 
-function excluirPergunta(perguntaId) {
-    const perguntaRef = doc(db, "perguntas", perguntaId);
-    deleteDoc(perguntaRef)
-        .then(() => {
-            console.log("Pergunta excluída com sucesso!");
-        })
-        .catch((error) => {
-            console.error("Erro ao excluir pergunta: ", error);
-        });
-}
 
 window.abrirModal = async function (receitaid) {
     document.getElementById('modal').style.display = 'block';
-
-
-
-
-
     const receitaRef = doc(db, "receitas", receitaid);
     const receitaSnap = await getDoc(receitaRef);
     if (receitaSnap.exists()) {
@@ -314,23 +394,26 @@ window.abrirModal = async function (receitaid) {
 
 
         document.getElementById("formReceita").innerHTML = `
-                   <label for="titulo">Título:</label><br>
-                   <input type="text" id="titulo" name="titulo" placeholder="titulo da receita" required value="${receita.titulo}">
-                   <br><br>
-                   <label for="descricao">Descrição:</label><br>
-                   <textarea id="descricao" name="descricao" rows="4" required>${receita.descricao}</textarea><br>
-                   <label for="mododepreparo">Modo de preparo:</label><br>
-                   <textarea id="mododepreparo" name="mododepreparo" rows="4" required>${receita.preparo}</textarea><br>
-                   <label for="ingredientes">Ingredientes:</label><br>
-                   <textarea id="ingredientes" name="ingredientes" rows="4" required>${receita.ingredientes}</textarea>
-                   <br><br>
-                   <label for="image">Imagem:</label><br>
-                   <img src="${receita.imagem}" alt="">
-                   <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required value="${receita.imagem}">
-                   <br><br>
-                   
-                   <button id="salvarReceita" type="submit">Salvar</button>
-       `;
+        <label for="titulo">Título:</label><br>
+        <input type="text" id="titulo" name="titulo" placeholder="titulo da receita" required value="${receita.titulo}">
+        <br><br>
+        <label for="descricao">Descrição:</label><br>
+        <textarea id="descricao" name="descricao" rows="4" required>${receita.descricao}</textarea><br>
+        <label for="mododepreparo">Modo de preparo:</label><br>
+        <textarea id="mododepreparo" name="mododepreparo" rows="4" required>${receita.preparo}</textarea><br>
+        <label for="ingredientes">Ingredientes:</label><br>
+        <textarea id="ingredientes" name="ingredientes" rows="4" required>${receita.ingredientes}</textarea>
+        <br><br>
+        <label for="image">Imagem:</label><br>
+        <img src="${receita.imagem}" alt="">
+        <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required value="${receita.imagem}">
+        <br><br>
+        
+        <button id="salvarReceita" type="submit">Salvar</button>
+        `;
+
+
+
 
         document.getElementById("salvarReceita").addEventListener("click", async function (event) {
             event.preventDefault();
@@ -358,44 +441,27 @@ window.abrirModal = async function (receitaid) {
     } else {
         console.log("Documento não encontrado!");
     }
-
-
-    // titulo.innerHTML = receita.titulo;
-    // descricao.innerHTML = receita.descricao;
-    // mododepreparo.innerHTML = receita.mododepreparo;
-    // ingredientes.innerHTML = receita.ingredientes;
-    // imglink.innerHTML = receita.imagem
-    // updateDoc(receitaRef, {
-
-    // })
 };
-
-
-
-
-
-
-
 async function listarReceitas() {
     const receitasSnap = await getDocs(collection(db, "receitas"));
     receitasSnap.forEach((doc) => {
         const receita = doc.data();
         console.log("Receita: ", receita.titulo);
         document.getElementById("cardsReceitas").innerHTML += `
-       <div class="card">
-                <img src="${receita.imagem}" alt="Imagem da Receita"
-                    class="card-image">
-                <div class="card-title">${receita.titulo}</div>
-                <div class="card-text">
-                    Breve descrição da receita. Pode incluir os principais ingredientes ou o modo de preparo resumido.
-                </div>
-                <button class="edit-button" onclick= "abrirModal('${doc.id}')" >Editar</button>
-            </div>
+        <div class="card">
+        <img src="${receita.imagem}" alt="Imagem da Receita"
+        class="card-image">
+        <div class="card-title">${receita.titulo}</div>
+        <div class="card-text">
+        Breve descrição da receita. Pode incluir os principais ingredientes ou o modo de preparo resumido.
+        </div>
+        <button class="edit-button" onclick= "abrirModal('${doc.id}')" >Editar</button>
+        </div>
         `;
     });
-
-
-
 }
+
+//Funções para adicionar perguntas
+
 
 

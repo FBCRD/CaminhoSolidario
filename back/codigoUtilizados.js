@@ -3,8 +3,8 @@ async function adicionarSelect() {
 
     try {
 
-        const docRef2 = doc(db, "perguntas", "p02");
-        await setDoc(docRef, {
+        const docRef2 = doc(db, "perguntas", "pergunta2");
+        await updateDoc(docRef, {
             opcoes: ["Maçã", "Banana", "Uva", "Laranja", "Morango", "Melancia", "Abacaxi", "Pera", "Mamão", "Manga",
                 "Kiwi", "Limão", "Coco", "Ameixa", "Cereja", "Goiaba", "Caqui", "Figo", "Maracujá", "Pêssego",
                 "Tangerina", "Abacate", "Framboesa", "Amora", "Graviola", "Jabuticaba"]

@@ -3,7 +3,7 @@ import { writeBatch } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-f
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc, query } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, deleteDoc, getDocs, where, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, deleteDoc, updateDoc, getDocs, where, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 const firebaseConfig = {
     apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
     authDomain: "caminhosolidario-49761.firebaseapp.com",
@@ -21,27 +21,18 @@ const analytics = getAnalytics(app);
 // Inicializa o Firestore (banco de dados)
 const db = getFirestore(app);
 
-async function renomearDocumento() {
-    
-    for (let i = 0; i < 10; i++) {
-        const docRefAntigo = doc(db, "perguntas", `p0${i}`);
-        const docSnap = await getDoc(docRefAntigo);
-
-        if (docSnap.exists()) {
-            const dados = docSnap.data();
-            
-            // Cria o novo documento com os dados antigos
-            await setDoc(doc(db, "perguntas", `pergunta${i}`), dados);
-            
-            // Exclui o documento antigo
-            await deleteDoc(docRefAntigo);
-            
-            console.log("Documento renomeado com sucesso!");
-        } else {
-            console.log("Documento antigo não encontrado.");
-        }
+async function alterarSelect(){
+    try{
+        const docRef = doc(db, "perguntas", "pergunta3");
+        await updateDoc(docRef, {
+            opcoes: ["Cenoura", "Tomate", "Alface", "Brócolis", "Pepino", "Batata", "Batata-doce", "Abóbora", "Chuchu",
+                "Couve", "Espinafre", "Repolho", "Beterraba", "Vagem", "Ervilha", "Milho", "Quiabo", "Rabanete",
+                "Berinjela", "Pimentão", "Abobrinha", "Cebola", "Alho", "Salsão", "Aipo", "Mandioquinha"]
+        }, { merge: true });
+    }catch (error) {
+        console.error("Erro ao atualizar o documento:", error);
     }
+    
 }
 
-// Exemplo de uso
-renomearDocumento("usuarios", "idAntigo", "idNovo");
+alterarSelect();

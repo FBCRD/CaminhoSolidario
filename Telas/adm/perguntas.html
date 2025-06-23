@@ -41,6 +41,7 @@
             display: block;
             margin-top: 10px;
             font-weight: bold;
+            color: black;
         }
 
         .modal-content input,
@@ -124,37 +125,14 @@
 
 
 
-    <div class="modal-content">
-        <span class="close" onclick="fecharModal()">&times;</span>
-        <!-- arrumar css -->
-        <h2>Nova Receita</h2>
-        <form action="">
-            <label for="title">Título:</label><br>
-            <input type="text" id="title" name="title" required>
-            <br><br>
-            <label for="description">Descrição:</label><br>
-            <textarea id="description" name="description" rows="4" required></textarea><br>
-            <label for="description">Ingredientes:</label><br>
-            <textarea id="description" name="description" rows="4" required></textarea>
-            <br><br>
-            <label for="image">Imagem:</label><br>
-            <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required>
-            <br><br>
-            <button type="submit">Salvar</button>
 
-
-
-
-
-
-        </form>
-    </div>
     <!-- Modal Nova Pergunta -->
     <div id="modalPergunta" class="modal">
         <div class="modal-content">
             <span class="close" onclick="fecharModalPergunta()">&times;</span>
             <h2>Nova Pergunta</h2>
             <form id="formPergunta">
+
                 <label for="perguntaTexto">Pergunta:</label>
                 <input type="text" id="perguntaTexto" name="perguntaTexto" placeholder="Digite a pergunta" required>
 
@@ -162,42 +140,83 @@
                 <select id="tipoPergunta" name="tipoPergunta" required>
                     <option value="">Selecione o tipo</option>
                     <option value="texto">Resposta em Texto</option>
-                    <option value="multipla">Múltipla Escolha</option>
-                    <option value="unica">Escolha Única</option>
+                    <option value="select">Múltipla Escolha</option>
+
                 </select>
+                <div id="opcoesMultipla" style="display:none; margin-top: 10px;">
+                    <label>Opções:</label>
+                    <div id="listaOpcoes">
+                        <!-- As opções vão aparecer aqui -->
+                    </div>
+                    <button type="button" onclick="adicionarOpcao()">Adicionar Opção</button>
+                </div>
 
                 <button type="submit">Salvar Pergunta</button>
             </form>
         </div>
     </div>
 
+    <div id="modalPerguntaEditar" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModalPerguntaEditar()">&times;</span>
+            <h2>Editar pergunta</h2>
+            <form id="formPerguntaEditar">
+
+
+            </form>
+        </div>
+    </div>
+
     <script type="module" src="/back/functionsAdm.js"></script>
     <script>
+
+        //Abre a opção para colocar as opções de múltipla escolha
+        document.getElementById('tipoPergunta').addEventListener('change', function () {
+            const tipo = this.value;
+            const divOpcoes = document.getElementById('opcoesMultipla');
+            const listaOpcoes = document.getElementById('listaOpcoes');
+
+            if (tipo === 'select') {
+                divOpcoes.style.display = 'block';
+                listaOpcoes.innerHTML = ''; // Limpa caso já tenha algo
+                adicionarOpcao(); // Já começa com um campo de opção
+            } else {
+                divOpcoes.style.display = 'none';
+                listaOpcoes.innerHTML = '';
+            }
+        });
+
+        function adicionarOpcao() {
+            const listaOpcoes = document.getElementById('listaOpcoes');
+            const index = listaOpcoes.children.length + 1;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'opcao' + index;
+            input.placeholder = 'Opção ' + index;
+            input.style.marginBottom = '5px';
+            input.required = true;
+
+            listaOpcoes.appendChild(input);
+        }
+
         function abrirModalPergunta() {
             document.getElementById('modalPergunta').style.display = 'block';
         }
 
+
         function fecharModalPergunta() {
             document.getElementById('modalPergunta').style.display = 'none';
         }
-
-        // Fecha o modal clicando fora
-        window.onclick = function (event) {
-            const modal = document.getElementById('modalPergunta');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
+        function fecharModalPerguntaEditar() {
+            document.getElementById('modalPerguntaEditar').style.display = 'none';
+            const formPerguntaEditar = document.getElementById('formPerguntaEditar');
+            formPerguntaEditar.reset(); // Limpa o formulário
+            
+        }
 
         // Exemplo de ação ao salvar a pergunta (você adapta conforme salvar no Firestore ou outro backend)
-        document.getElementById('formPergunta').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const pergunta = document.getElementById('perguntaTexto').value;
-            const tipo = document.getElementById('tipoPergunta').value;
-            console.log("Nova Pergunta:", pergunta, "Tipo:", tipo);
-            fecharModalPergunta();
-            // Aqui você pode chamar sua função de salvar no banco
-        });
+
     </script>
 </body>
 

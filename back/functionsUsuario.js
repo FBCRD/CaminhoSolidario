@@ -1,7 +1,6 @@
 // Configuração do Firebase
 //Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-analytics.js";
 import { getFirestore, collection, addDoc, query } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getDoc, doc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 
@@ -20,12 +19,10 @@ const firebaseConfig = {
 
 // Incializa o Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
 console.log("Firebase inicializado com sucesso!");
 // Inicializa o Firestore (banco de dados)
 const db = getFirestore(app);
-
-
 
 //Verifica a pagina atual e conforme a pagina em que ele se encontra da inicio ao uso da função respectiva daquela pagina
 document.addEventListener("DOMContentLoaded", function () {
@@ -38,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         iniciarHome();
     } else if (pagina === "telaquestionario.html") {
         console.log("telaQuestionario");
-        gerarPerguntas();
+        
         TelaQuestionario();
     }
     else if (pagina === "teladefinalizacao.html") {
@@ -62,9 +59,6 @@ function detectarPagina() {
     pagina = pagina.toLowerCase(); // Ignora maiúsculas/minúsculas
     return pagina;
 }
-
-
-
 //Função cadastro de usuario
 async function cadastroUsuario() {
     const form = document.getElementById("formUsuario");
@@ -98,6 +92,7 @@ async function cadastroUsuario() {
     }
 };
 
+//Fazer Login do usuário
 async function loginUsuario() {
     const form = document.getElementById("formLoginUsuario");
     form.addEventListener("submit", async function (event) {
@@ -137,8 +132,6 @@ async function loginUsuario() {
 
 }
 
-
-
 //Função para iniciar a home com o nome do usuário, função de sair e ir para o questionário
 async function iniciarHome() {
     const usuarioId = localStorage.getItem("usuarioId");
@@ -169,38 +162,100 @@ async function iniciarHome() {
         
     }
 }
+// async function TelaQuestionario() {
+//     const usuarioId = localStorage.getItem("usuarioId");
+//     const form = document.getElementById("formQuestionario");
 
-let numeroPergunta = 0;
+//     if (!usuarioId) {
+//         alert("Usuário não encontrado!");
+//         return;
+//     }
 
-async function buscarProgresso(usuarioId) {
-    const respostasRef = collection(db, "usuarios", usuarioId, "respostas");
-    const snapshot = await getDocs(respostasRef);
-    
-    const perguntasRef = collection(db, "perguntas");
-    const perguntasSnap = await getDocs(perguntasRef);
-    
-    
-    const totalperguntas = perguntasSnap.size; // Contagem de perguntas no banco de dados
-    const totalRespondidas = snapshot.size;  // Contagem de documentos dentro de "respostas"
-    console.log(`Total de perguntas: ${totalperguntas}`);
-    console.log(`Total de perguntas respondidas: ${totalRespondidas}`);
-    if(totalRespondidas >= totalperguntas) {
-        console.log("Todas as perguntas já foram respondidas.");
-        window.location.href = "/Telas/usuario/teladeFinalizacao.html";
-        return;
+//     const perguntasSnap = await getDocs(collection(db, "perguntas"));
+//     const curiosidadesSnap = await getDocs(collection(db, "curiosidades"));
 
-    }
+//     const perguntas = perguntasSnap.docs;
+//     const curiosidades = curiosidadesSnap.docs;
 
-    if (totalRespondidas > 0) {
-        numeroPergunta = totalRespondidas + 1;  // Próxima pergunta
-        console.log(`Usuário já respondeu ${totalRespondidas} perguntas. Indo para a pergunta ${numeroPergunta}`);
-    } else {
-        console.log("Usuário ainda não respondeu nenhuma pergunta.");
-    }
-}
+//     let indicePergunta = 0;
 
+//     function mostrarPergunta() {
+//         if (indicePergunta >= perguntas.length) {
+//             window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+//             return;
+//         }
 
-async function TelaQuestionario() {
+//         const pergunta = perguntas[indicePergunta].data();
+//         const curiosidade = curiosidades.length > 0 ? curiosidades[indicePergunta % curiosidades.length].data() : null;
+
+//         document.getElementById("perguntasquest").textContent = pergunta.texto;
+//         document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
+
+//         // Limpar campo antigo
+//         const campoAntigo = document.getElementById("resposta");
+//         if (campoAntigo) campoAntigo.remove();
+
+//         let novoCampo;
+
+//         if (pergunta.tipo === "select") {
+//             novoCampo = document.createElement("select");
+//             novoCampo.id = "resposta";
+//             novoCampo.name = "resposta";
+//             novoCampo.className = "select-personalizado";
+
+//             const optionDefault = document.createElement("option");
+//             optionDefault.value = "";
+//             optionDefault.text = "Selecione uma opção";
+//             optionDefault.disabled = true;
+//             optionDefault.selected = true;
+//             novoCampo.appendChild(optionDefault);
+
+//             pergunta.opcoes.forEach(opcao => {
+//                 const option = document.createElement("option");
+//                 option.value = opcao;
+//                 option.textContent = opcao;
+//                 novoCampo.appendChild(option);
+//             });
+
+//         } else {
+//             novoCampo = document.createElement("textarea");
+//             novoCampo.id = "resposta";
+//             novoCampo.name = "resposta";
+//             novoCampo.className = "inputs-questionario";
+//             novoCampo.placeholder = "Responda aqui";
+//         }
+
+//         form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
+//     }
+
+//     form.addEventListener("submit", async function (event) {
+//         event.preventDefault();
+//         const resposta = document.getElementById("resposta").value;
+
+//         if (resposta === "") {
+//             alert("Preencha todos os campos!");
+//             return;
+//         }
+
+//         try {
+//             const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
+//             await addDoc(respostaRef, {
+//                 perguntaId: perguntas[indicePergunta].id,
+//                 resposta: resposta
+//             });
+
+//             console.log("Resposta enviada com sucesso!");
+
+//             indicePergunta++;
+//             form.reset();
+//             mostrarPergunta();
+
+//         } catch (error) {
+//             console.error("Erro ao adicionar o documento: ", error);
+//         }
+//     });
+
+    async function TelaQuestionario() {
     const usuarioId = localStorage.getItem("usuarioId");
     const form = document.getElementById("formQuestionario");
 
@@ -209,119 +264,120 @@ async function TelaQuestionario() {
         return;
     }
 
-    // Verificar onde o usuário parou
-    console.log("entrou")
-    await buscarProgresso(usuarioId);
-    await gerarPerguntas();
+    const perguntasSnap = await getDocs(collection(db, "perguntas"));
+    const curiosidadesSnap = await getDocs(collection(db, "curiosidades"));
+    const respostasSnap = await getDocs(collection(db, "usuarios", usuarioId, "respostas"));
 
-    if (form) {
-        form.addEventListener("submit", async function (event) {
-            event.preventDefault();
-            const resposta = document.getElementById("resposta").value;
+    const perguntas = perguntasSnap.docs;
+    const curiosidades = curiosidadesSnap.docs;
+    const respostas = respostasSnap.docs;
 
-            if (resposta === "") {
-                alert("Preencha todos os campos!");
-                return;
-            }
+    // Criar um Set com os IDs das perguntas já respondidas
+    const perguntasRespondidas = new Set(respostas.map(doc => doc.data().perguntaId));
 
-            try {
-                const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
-                await addDoc(respostaRef, {
-                    perguntaId: "pergunta" + numeroPergunta,
-                    resposta: resposta
-                });
+    // Encontrar o índice da próxima pergunta não respondida
+    let indicePergunta = perguntas.findIndex(perguntaDoc => !perguntasRespondidas.has(perguntaDoc.id));
 
-                console.log("Resposta enviada com sucesso!");
-
-                numeroPergunta++;
-                form.reset();
-
-                const temMaisPerguntas = await gerarPerguntas();
-
-                if (!temMaisPerguntas) {
-                    window.location.href = "/Telas/usuario/teladeFinalizacao.html";
-                }
-            } catch (error) {
-                console.error("Erro ao adicionar o documento: ", error);
-            }
-        });
+    // Se respondeu todas, mandar direto pra tela final
+    if (indicePergunta === -1) {
+        window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+        return;
     }
 
-    document.getElementById("btnSair").addEventListener("click", async function (event) {
+    function mostrarPergunta() {
+        if (indicePergunta >= perguntas.length) {
+            window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+            return;
+        }
+
+        const pergunta = perguntas[indicePergunta].data();
+        const curiosidade = curiosidades.length > 0 ? curiosidades[indicePergunta % curiosidades.length].data() : null;
+
+        document.getElementById("perguntasquest").textContent = pergunta.texto;
+        document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
+
+        const campoAntigo = document.getElementById("resposta");
+        if (campoAntigo) campoAntigo.remove();
+
+        let novoCampo;
+
+        if (pergunta.tipo === "select") {
+            novoCampo = document.createElement("select");
+            novoCampo.id = "resposta";
+            novoCampo.name = "resposta";
+            novoCampo.className = "select-personalizado";
+
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.text = "Selecione uma opção";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            novoCampo.appendChild(optionDefault);
+
+            pergunta.opcoes.forEach(opcao => {
+                const option = document.createElement("option");
+                option.value = opcao;
+                option.textContent = opcao;
+                novoCampo.appendChild(option);
+            });
+
+        } else {
+            novoCampo = document.createElement("textarea");
+            novoCampo.id = "resposta";
+            novoCampo.name = "resposta";
+            novoCampo.className = "inputs-questionario";
+            novoCampo.placeholder = "Responda aqui";
+        }
+
+        form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
+    }
+
+    form.addEventListener("submit", async function (event) {
         event.preventDefault();
-        localStorage.removeItem("usuarioId");
-        window.location.href = "index.html";
-        console.log("Usuário deslogado com sucesso!");
+        const resposta = document.getElementById("resposta").value;
+
+        if (resposta === "") {
+            alert("Preencha todos os campos!");
+            return;
+        }
+
+        try {
+            const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
+            await addDoc(respostaRef, {
+                perguntaId: perguntas[indicePergunta].id,
+                resposta: resposta
+            });
+
+            console.log("Resposta enviada com sucesso!");
+
+            // Avança para próxima não respondida
+            indicePergunta++;
+            while (indicePergunta < perguntas.length && perguntasRespondidas.has(perguntas[indicePergunta].id)) {
+                indicePergunta++;
+            }
+
+            form.reset();
+            mostrarPergunta();
+
+        } catch (error) {
+            console.error("Erro ao adicionar o documento: ", error);
+        }
     });
 
-    document.getElementById("btnVoltar").addEventListener("click", async function (event) {
-        event.preventDefault();
+    
+
+
+    mostrarPergunta();  // Exibir a primeira pergunta ao carregar a tela
+
+    document.getElementById("btnSair").addEventListener("click", () => {
+        localStorage.removeItem("usuarioId");
+        window.location.href = "index.html";
+    });
+    
+    document.getElementById("btnVoltar").addEventListener("click", () => {
         history.back();
     });
 }
-
-//Função para a tela de questionario
-//gera perguntas, coleta respostas, botão sair e botão voltar
-// async function TelaQuestionario() {
-//     const usuarioId = localStorage.getItem("usuarioId");
-//     const form = document.getElementById("formQuestionario");
-//     //verifica se o usuário está logado
-//     if (!usuarioId) {
-//         console.alert("Usuário não encontrado!");
-//         return;
-//     }
-
-//     await gerarPerguntas();
-
-//     if (form) {
-//         form.addEventListener("submit", async function (event) {
-//             event.preventDefault();
-//             const resposta = document.getElementById("resposta").value;
-//             //Fazer validação do campo de resposta
-//             if (resposta === "") {
-//                 alert("Preencha todos os campos!");
-//                 return;
-//             }
-//             //faz a ligação da resposta com a pergunta
-//             try {
-//                 const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
-//                 await addDoc(respostaRef, {
-//                     perguntaId: "pergunta" + numeroPergunta,
-//                     resposta: resposta
-//                 });
-
-//                 console.log("Resposta enviada com sucesso!");
-
-//                 numeroPergunta++;
-//                 form.reset(); // Limpa o formulário
-//                 const temMaisPerguntas = await gerarPerguntas();
-
-//                 if (!temMaisPerguntas) {
-//                     window.location.href = "/Telas/usuario/teladeFinalizacao.html";
-//                 }
-//             } catch (error) {
-//                 console.error("Erro ao adicionar o documento: ", error);
-//             }
-//         });
-//     }
-//     document.getElementById("btnSair").addEventListener("click", async function (event) {
-//         event.preventDefault();
-//         // Limpa o nome do usuário do localStorage
-//         localStorage.removeItem("usuarioId");
-//         window.location.href = "index.html";
-//         console.log("Usuário deslogado com sucesso!");
-//     });
-
-//     document.getElementById("btnVoltar").addEventListener("click", async function (event) {
-//         event.preventDefault();
-//         history.back();
-//     });
-
-
-
-// };
-
-
 
 
 //função do botão de sair, da tela Final
@@ -338,18 +394,18 @@ async function telaFinal() {
 
     const respostasRef = collection(db, "usuarios", idusuario, "respostas");
 
-    // Busca apenas a resposta da pergunta2
+    
     const pergunta2 = query(respostasRef, where("perguntaId", "==", "pergunta2"));
     const pergunta2Snapshot = await getDocs(pergunta2);
 
     if (pergunta2Snapshot.empty) {
-        console.log("Usuário ainda não respondeu a pergunta2.");
+        console.log("Usuário ainda não respondeu a pergunta sobre frutas.");
         return;
     }
 
     pergunta2Snapshot.forEach(async (docRes) => {
         const data = docRes.data();
-        console.log("Resposta da pergunta2:", data.resposta);
+        console.log("Resposta da pergunta sobre frutas:", data.resposta);
 
         const fruta = data.resposta;
 
@@ -374,8 +430,6 @@ async function telaFinal() {
         }
     });
 }
-
-
 function redlogin() {
     document.getElementById("redlogin").addEventListener("click", async function (event) {
         event.preventDefault();
@@ -389,137 +443,8 @@ function redCad() {
     });
 }
 
-async function gerarPerguntas() {
-    console.log("Gerando pergunta número: " + numeroPergunta);
-    const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
-    const docSnap = await getDoc(perguntasRef);
-    const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
-    const curiosidadesSnap = await getDoc(curiosidadesRef);
-
-    if (docSnap.exists()) {
-        const pergunta = docSnap.data();
-        const curiosidade = curiosidadesSnap.data();
-
-        document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
-        document.getElementById("perguntasquest").textContent = pergunta.texto;
-
-        const campoRespostaAntigo = document.getElementById("resposta");
-        if (campoRespostaAntigo) {
-            campoRespostaAntigo.remove();
-        }
-
-        let novoCampo;
-
-        if (pergunta.select) {
-            novoCampo = document.createElement("select");
-            novoCampo.id = "resposta";
-            novoCampo.name = "resposta";
-            novoCampo.className = "select-personalizado";
-            novoCampo.required = true;
-
-            const optionDefault = document.createElement("option");
-            optionDefault.value = "";
-            optionDefault.text = "Selecione uma opção";
-            optionDefault.disabled = true;
-            optionDefault.selected = true;
-            novoCampo.appendChild(optionDefault);
-
-            pergunta.opcoes.forEach(opcao => {
-                const option = document.createElement("option");
-                option.value = opcao;
-                option.textContent = opcao;
-                novoCampo.appendChild(option);
-            });
-
-        } else {
-            novoCampo = document.createElement("textarea");
-            novoCampo.id = "resposta";
-            novoCampo.name = "resposta";
-            novoCampo.className = "inputs-questionario";
-            novoCampo.placeholder = "Responda aqui";
-            novoCampo.required = true;
-        }
-
-        const form = document.getElementById("formQuestionario");
-        form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
-
-        return true;
-    } else {
-        console.log("Não há mais perguntas!");
-        return false;
-    }
-}
 
 
-
-//Gerador de perguntas, a cada pergunta gerada, uma curiosidade tambem é chamada
-
-
-//As perguntas e as curiosidades são inseridas atraves do banco de dados, portanto por enquanto são estaticas
-// async function gerarPerguntas() {
-//     const perguntasRef = doc(db, "perguntas", "pergunta" + numeroPergunta);
-//     const docSnap = await getDoc(perguntasRef);
-//     const curiosidadesRef = doc(db, "curiosidades", "c" + numeroPergunta);
-//     const curiosidadesSnap = await getDoc(curiosidadesRef);
-
-//     if (docSnap.exists()) {
-//         const pergunta = docSnap.data();
-//         const curiosidade = curiosidadesSnap.data();
-
-//         document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
-//         document.getElementById("perguntasquest").textContent = pergunta.texto;
-
-//         const perguntaId = numeroPergunta.toString();
-//         const campoResposta = document.getElementById("resposta");
-
-//         // Remove o campo anterior (textarea ou select)
-//         if (campoResposta) {
-//             campoResposta.remove();
-//         }
-
-//         let novoCampo;
-
-//         if (pergunta.select) {
-//             // Cria select se for pergunta
-//             novoCampo = document.createElement("select");
-//             novoCampo.id = "resposta";
-//             novoCampo.name = "resposta";
-//             novoCampo.className = "select-personalizado";
-//             novoCampo.required = true;
-
-//             const optionDefault = document.createElement("option");
-//             optionDefault.value = "";
-//             optionDefault.text = "Selecione uma opção";
-//             optionDefault.disabled = true;
-//             optionDefault.selected = true;
-//             novoCampo.appendChild(optionDefault);
-
-//             pergunta.opcoes.forEach(opcao => {
-//                 const option = document.createElement("option");
-//                 option.value = opcao;
-//                 option.textContent = opcao;
-//                 novoCampo.appendChild(option);
-//             });
-
-//         } else {
-//             // Cria textarea se a resposta for por extenso
-//             novoCampo = document.createElement("textarea");
-//             novoCampo.id = "resposta";
-//             novoCampo.name = "resposta";
-//             novoCampo.className = "inputs-questionario";
-//             novoCampo.placeholder = "Responda aqui";
-//             novoCampo.required = true;
-//         }
-
-//         const form = document.getElementById("formQuestionario");
-//         form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
-
-//         return true;
-//     } else {
-//         console.log("Não há mais perguntas!");
-//         return false;
-//     }
-// }
 
 
 
