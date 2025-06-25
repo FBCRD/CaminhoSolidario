@@ -2,9 +2,9 @@
 //Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, getDocs, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getDoc, doc, getDocs, deleteDoc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-
+const { jsPDF } = window.jspdf;
 
 //Codigo gerado pelo Firebase, cada projeto gera um codigo especifico
 const firebaseConfig = {
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (user) {
                 console.log("Usuário logado:", user.email);
                 gerarUsuarios();
-
+                redRel();
 
             } else {
 
@@ -62,9 +62,13 @@ document.addEventListener("DOMContentLoaded", function () {
         listarPerguntas();
         btns();
         adicionarPergunta();
+
     } else if (pagina === "receitas.html") {
         console.log("Página de receitas");
         listarReceitas();
+        btns();
+    }else if (pagina === "relatorios.html") {
+        gerarRelatorio();
         btns();
     }
     else {
@@ -471,7 +475,119 @@ async function listarReceitas() {
     });
 }
 
-//Funções para adicionar perguntas
+//Funções para gerar relatorios
 
 
+async function redRel() {
+
+    document.getElementById("gerarRel").addEventListener("click", async function (event) {
+        event.preventDefault;
+        location.href = "relatorios.html";
+    })
+};
+
+// Coleta e filtra dados
+async function gerarRelatorio() {
+    let dadosGlobais = {};
+    async function coletarDadosComFiltro(turmaFiltro, idadeMin){
+
+    
+    const perguntasRef = collection(db, "perguntas");
+    const perguntasSnap = await getDocs(query(perguntasRef, where("tipo", "==", "select")));
+    const mapa = {};
+
+    perguntasSnap.forEach(doc => {
+        const data = doc.data();
+        mapa[doc.id] = {
+            texto: data.texto,
+            opcoes: data.opcoes,
+            contagem: Object.fromEntries(data.opcoes.map(o => [o, 0]))
+        };
+    });
+
+    const usuariosSnap = await getDocs(collection(db, "usuarios"));
+    for (const userDoc of usuariosSnap.docs) {
+        const user = userDoc.data();
+
+        if ((turmaFiltro && user.turma !== turmaFiltro) ||
+            (idadeMin && parseInt(user.idade) < parseInt(idadeMin))) continue;
+
+        const respostasSnap = await getDocs(collection(db, `usuarios/${userDoc.id}/respostas`));
+        respostasSnap.forEach(respDoc => {
+            const { perguntaId, resposta } = respDoc.data();
+            const pergunta = mapa[perguntaId];
+            if (pergunta && pergunta.contagem.hasOwnProperty(resposta)) {
+                pergunta.contagem[resposta]++;
+            }
+        });
+    }
+
+    return mapa;
+}
+
+// Exibe o relatório na tela
+document.getElementById("btnGerarRelatorio").addEventListener("click", async function (event) {
+    event.preventDefault();
+    const turma = document.getElementById("filtroTurma").value.trim();
+    const idade = document.getElementById("filtroIdade").value.trim();
+
+    const dados = await coletarDadosComFiltro(turma || null, idade || null);
+    dadosGlobais = dados;
+
+    const relatorioDiv = document.getElementById("relatorioHTML");
+    relatorioDiv.innerHTML = "";
+
+    for (const [id, pergunta] of Object.entries(dados)) {
+        const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+        const bloco = document.createElement("div");
+        bloco.innerHTML = `<h3>${pergunta.texto}</h3>`;
+        const ul = document.createElement("ul");
+
+        for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+            const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+            const li = document.createElement("li");
+            li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
+            ul.appendChild(li);
+        }
+
+        bloco.appendChild(ul);
+        relatorioDiv.appendChild(bloco);
+    }
+},
+);
+
+// Gera e baixa o PDF
+document.getElementById("btnGerarPDF").addEventListener("click", function (event) {
+    event.preventDefault();
+    const doc = new jsPDF();
+    let y = 20;
+
+    doc.setFontSize(16);
+    doc.text("Relatório de Respostas - Perguntas de múltipla escolha", 20, y);
+    y += 10;
+    doc.setFontSize(12);
+
+    for (const [id, pergunta] of Object.entries(dadosGlobais)) {
+        const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+        y += 10;
+        if (y > 270) { doc.addPage(); y = 20; }
+
+        doc.setFont(undefined, "bold");
+        doc.text(pergunta.texto, 20, y);
+        doc.setFont(undefined, "normal");
+        y += 8;
+
+        for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+            const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+            doc.text(`- ${opcao}: ${count} resposta(s) (${porcentagem}%)`, 25, y);
+            y += 7;
+            if (y > 270) { doc.addPage(); y = 20; }
+        }
+    }
+
+    doc.save("relatorio_selects.pdf");
+
+}
+);
+}
 

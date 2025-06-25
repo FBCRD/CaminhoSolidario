@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Relatório de Perguntas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #163965;
+            color: #fff;
+        }
+
+        nav.navbarquest {
+            justify-content: space-between;
+            display: flex;
+            padding: 10px;
+            background-color: #0f2a4c;
+        }
+
+        .logo {
+            max-width: 160px;
+        }
+
+        .btnVoltar,
+        .btnSair {
+            color: white;
+            background-color: black;
+            border-radius: 10px;
+            border: none;
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+
+        main {
+            background-color: #fff;
+            color: #333;
+            border-radius: 10px;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #163965;
+        }
+
+        label,
+        input {
+            display: block;
+            margin-bottom: 10px;
+            
+        }
+
+        input {
+            padding: 8px;
+            width: 200px;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .relatorio-section {
+            margin-top: 30px;
+        }
+
+        .relatorio-section h3 {
+            color: #163965;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbarquest">
+        <div>
+            <button id="btnVoltar" class="btnVoltar">Voltar</button>
+        </div>
+        <div>
+            <img class="logo" src="/imgs/logo.png" alt="Logo">
+        </div>
+        <div>
+            <button id="btnSair" class="btnSair">Sair</button>
+        </div>
+    </nav>
+
+    <main>
+        <h1>Relatório de Perguntas do Tipo Select</h1>
+        <p>Opções de filtro</p>
+        <label>Turma: <input type="text" id="filtroTurma" placeholder="Ex: 203"></label>
+        <label>Idade mínima: <input type="number" id="filtroIdade" placeholder="Ex: 10"></label>
+        <button id="btnGerarRelatorio" >Gerar Relatório</button>
+        <div id="relatorioHTML" class="relatorio-section"></div>
+        <button id="btnGerarPDF">Baixar PDF</button>
+    </main>
+
+    <!-- <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        const { jsPDF } = window.jspdf;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
+            authDomain: "caminhosolidario-49761.firebaseapp.com",
+            projectId: "caminhosolidario-49761",
+            storageBucket: "caminhosolidario-49761.firebasestorage.app",
+            messagingSenderId: "370724267395",
+            appId: "1:370724267395:web:a1e162926e5283836b82b6",
+            measurementId: "G-CQT01YM1N5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        let dadosGlobais = {};
+
+        async function coletarDadosComFiltro(turmaFiltro, idadeMin) {
+            const perguntasRef = collection(db, "perguntas");
+            const perguntasSnap = await getDocs(query(perguntasRef, where("tipo", "==", "select")));
+            const mapa = {};
+
+            perguntasSnap.forEach(doc => {
+                const data = doc.data();
+                mapa[doc.id] = {
+                    texto: data.texto,
+                    opcoes: data.opcoes,
+                    contagem: Object.fromEntries(data.opcoes.map(o => [o, 0]))
+                };
+            });
+
+            const usuariosSnap = await getDocs(collection(db, "usuarios"));
+            for (const userDoc of usuariosSnap.docs) {
+                const user = userDoc.data();
+                if ((turmaFiltro && user.turma !== turmaFiltro) ||
+                    (idadeMin && parseInt(user.idade) < parseInt(idadeMin))) continue;
+
+                const respostasSnap = await getDocs(collection(db, `usuarios/${userDoc.id}/respostas`));
+                respostasSnap.forEach(respDoc => {
+                    const { perguntaId, resposta } = respDoc.data();
+                    const pergunta = mapa[perguntaId];
+                    if (pergunta && pergunta.contagem.hasOwnProperty(resposta)) {
+                        pergunta.contagem[resposta]++;
+                    }
+                });
+            }
+
+            return mapa;
+        }
+
+        window.filtrarRespostas = async function () {
+            const turma = document.getElementById("filtroTurma").value.trim();
+            const idade = document.getElementById("filtroIdade").value.trim();
+            const dados = await coletarDadosComFiltro(turma || null, idade || null);
+            dadosGlobais = dados;
+
+            const relatorioDiv = document.getElementById("relatorioHTML");
+            relatorioDiv.innerHTML = "";
+            for (const [id, pergunta] of Object.entries(dados)) {
+                const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+                const bloco = document.createElement("div");
+                bloco.innerHTML = `<h3>${pergunta.texto}</h3>`;
+                const ul = document.createElement("ul");
+                for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                    const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                    const li = document.createElement("li");
+                    li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
+                    ul.appendChild(li);
+                }
+                bloco.appendChild(ul);
+                relatorioDiv.appendChild(bloco);
+            }
+        };
+
+        window.gerarPDF = function () {
+            const doc = new jsPDF();
+            let y = 20;
+            doc.setFontSize(16);
+            doc.text("Relatório de Respostas - Perguntas de multipla escolha", 20, y);
+            y += 10;
+            doc.setFontSize(12);
+
+            for (const [id, pergunta] of Object.entries(dadosGlobais)) {
+                const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+                y += 10;
+                if (y > 270) { doc.addPage(); y = 20; }
+                doc.setFont(undefined, "bold");
+                doc.text(pergunta.texto, 20, y);
+                doc.setFont(undefined, "normal");
+                y += 8;
+                for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                    const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                    doc.text(`- ${opcao}: ${count} resposta(s) (${porcentagem}%)`, 25, y);
+                    y += 7;
+                    if (y > 270) { doc.addPage(); y = 20; }
+                }
+            }
+            doc.save("relatorio_selects.pdf");
+        }
+    </script> -->
+    <script type="module" src="/back/functionsAdm.js"></script>
+</body>
+
+</html>
