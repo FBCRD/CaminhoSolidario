@@ -4,7 +4,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebas
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getDoc, doc, getDocs, deleteDoc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
-const { jsPDF } = window.jspdf;
+
 
 //Codigo gerado pelo Firebase, cada projeto gera um codigo especifico
 const firebaseConfig = {
@@ -489,6 +489,7 @@ async function redRel() {
 // Coleta e filtra dados
 async function gerarRelatorio() {
     let dadosGlobais = {};
+    const { jsPDF } = window.jspdf;
     async function coletarDadosComFiltro(turmaFiltro, idadeMin){
 
     
