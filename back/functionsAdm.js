@@ -310,14 +310,24 @@ window.editarPergunta = async function (perguntaId) {
             })
             console.log("Pergunta atualizada com sucesso!");
             // Atualiza a página para refletir as mudanças
-            location.reload();
+            fecharModalPerguntaEditar();
         })
     } catch (error) {
         console.error("Erro ao atualizar pergunta:", error);
     }
 
-}
 
+
+}
+function fecharModalPerguntaEditar() {
+    document.getElementById('modalPerguntaEditar').style.display = 'none';
+    document.getElementById('formPerguntaEditar').reset();
+    document.getElementById('listaOpcoeseditar').innerHTML = ''; // Limpa as opções
+    console.log("Modal de edição fechado e formulário resetado.");
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
 
 
 function adicionarOpcao() {
@@ -453,7 +463,7 @@ async function listarReceitas() {
         class="card-image">
         <div class="card-title">${receita.titulo}</div>
         <div class="card-text">
-        Breve descrição da receita. Pode incluir os principais ingredientes ou o modo de preparo resumido.
+        survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem
         </div>
         <button class="edit-button" onclick= "abrirModal('${doc.id}')" >Editar</button>
         </div>

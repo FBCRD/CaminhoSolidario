@@ -27,7 +27,7 @@ const db = getFirestore(app);
 //Verifica a pagina atual e conforme a pagina em que ele se encontra da inicio ao uso da função respectiva daquela pagina
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "index.html") {
+    if (pagina === "telacadastro.html") {
         cadastroUsuario();
         redlogin();
     }
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         iniciarHome();
     } else if (pagina === "telaquestionario.html") {
         console.log("telaQuestionario");
-        
+
         TelaQuestionario();
     }
     else if (pagina === "teladefinalizacao.html") {
@@ -62,6 +62,7 @@ function detectarPagina() {
 //Função cadastro de usuario
 async function cadastroUsuario() {
     const form = document.getElementById("formUsuario");
+    
     //Fazer validação dos campos
     if (form) {
         form.addEventListener("submit", async function (event) {
@@ -90,7 +91,8 @@ async function cadastroUsuario() {
             }
         });
     }
-};
+    
+}
 
 //Fazer Login do usuário
 async function loginUsuario() {
@@ -140,9 +142,9 @@ async function iniciarHome() {
     // Verifica se o usuário está logado
     document.getElementById("sair").addEventListener("click", async function (event) {
         event.preventDefault();
-        
 
-        window.location.href = "index.html";
+
+        window.location.href = "telaCadastro.html";
         console.log("Usuário deslogado com sucesso!");
 
 
@@ -158,104 +160,13 @@ async function iniciarHome() {
     } else {
         alert("Usuário não encontrado!");
         localStorage.removeItem("usuarioId");
-        window.location.href = "index.html";
-        
+        window.location.href = "telaCadastro.html";
+
     }
 }
-// async function TelaQuestionario() {
-//     const usuarioId = localStorage.getItem("usuarioId");
-//     const form = document.getElementById("formQuestionario");
 
-//     if (!usuarioId) {
-//         alert("Usuário não encontrado!");
-//         return;
-//     }
 
-//     const perguntasSnap = await getDocs(collection(db, "perguntas"));
-//     const curiosidadesSnap = await getDocs(collection(db, "curiosidades"));
-
-//     const perguntas = perguntasSnap.docs;
-//     const curiosidades = curiosidadesSnap.docs;
-
-//     let indicePergunta = 0;
-
-//     function mostrarPergunta() {
-//         if (indicePergunta >= perguntas.length) {
-//             window.location.href = "/Telas/usuario/teladeFinalizacao.html";
-//             return;
-//         }
-
-//         const pergunta = perguntas[indicePergunta].data();
-//         const curiosidade = curiosidades.length > 0 ? curiosidades[indicePergunta % curiosidades.length].data() : null;
-
-//         document.getElementById("perguntasquest").textContent = pergunta.texto;
-//         document.getElementById("curiosidades").textContent = curiosidade ? curiosidade.texto : "";
-
-//         // Limpar campo antigo
-//         const campoAntigo = document.getElementById("resposta");
-//         if (campoAntigo) campoAntigo.remove();
-
-//         let novoCampo;
-
-//         if (pergunta.tipo === "select") {
-//             novoCampo = document.createElement("select");
-//             novoCampo.id = "resposta";
-//             novoCampo.name = "resposta";
-//             novoCampo.className = "select-personalizado";
-
-//             const optionDefault = document.createElement("option");
-//             optionDefault.value = "";
-//             optionDefault.text = "Selecione uma opção";
-//             optionDefault.disabled = true;
-//             optionDefault.selected = true;
-//             novoCampo.appendChild(optionDefault);
-
-//             pergunta.opcoes.forEach(opcao => {
-//                 const option = document.createElement("option");
-//                 option.value = opcao;
-//                 option.textContent = opcao;
-//                 novoCampo.appendChild(option);
-//             });
-
-//         } else {
-//             novoCampo = document.createElement("textarea");
-//             novoCampo.id = "resposta";
-//             novoCampo.name = "resposta";
-//             novoCampo.className = "inputs-questionario";
-//             novoCampo.placeholder = "Responda aqui";
-//         }
-
-//         form.insertBefore(novoCampo, document.getElementById("btnEnviar"));
-//     }
-
-//     form.addEventListener("submit", async function (event) {
-//         event.preventDefault();
-//         const resposta = document.getElementById("resposta").value;
-
-//         if (resposta === "") {
-//             alert("Preencha todos os campos!");
-//             return;
-//         }
-
-//         try {
-//             const respostaRef = collection(db, "usuarios", usuarioId, "respostas");
-//             await addDoc(respostaRef, {
-//                 perguntaId: perguntas[indicePergunta].id,
-//                 resposta: resposta
-//             });
-
-//             console.log("Resposta enviada com sucesso!");
-
-//             indicePergunta++;
-//             form.reset();
-//             mostrarPergunta();
-
-//         } catch (error) {
-//             console.error("Erro ao adicionar o documento: ", error);
-//         }
-//     });
-
-    async function TelaQuestionario() {
+async function TelaQuestionario() {
     const usuarioId = localStorage.getItem("usuarioId");
     const form = document.getElementById("formQuestionario");
 
@@ -364,16 +275,16 @@ async function iniciarHome() {
         }
     });
 
-    
+
 
 
     mostrarPergunta();  // Exibir a primeira pergunta ao carregar a tela
 
     document.getElementById("btnSair").addEventListener("click", () => {
         localStorage.removeItem("usuarioId");
-        window.location.href = "index.html";
+        window.location.href = "telaCadastro.html";
     });
-    
+
     document.getElementById("btnVoltar").addEventListener("click", () => {
         history.back();
     });
@@ -385,7 +296,7 @@ async function telaFinal() {
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
         localStorage.removeItem("usuarioId");
-        window.location.href = "index.html";
+        window.location.href = "telaCadastro.html";
         console.log("Usuário deslogado com sucesso!");
     });
 
@@ -394,7 +305,7 @@ async function telaFinal() {
 
     const respostasRef = collection(db, "usuarios", idusuario, "respostas");
 
-    
+
     const pergunta2 = query(respostasRef, where("perguntaId", "==", "pergunta2"));
     const pergunta2Snapshot = await getDocs(pergunta2);
 
@@ -439,7 +350,7 @@ function redlogin() {
 function redCad() {
     document.getElementById("redCad").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "index.html";
+        window.location.href = "telaCadastro.html";
     });
 }
 
