@@ -99,7 +99,7 @@
     </nav>
 
 
-    <h1 style="font-size: large; margin-bottom: 10px;">Perguntas do quetionario</h1>
+    <h1 style="font-size: large; margin-bottom: 10px;">Perguntas do quetionário</h1>
     <div style="display: flex;
    flex-direction: column;
    align-items: center;">
@@ -119,7 +119,7 @@
         </div>
     </div>
     <footer class="footer-marista">
-        <img src="/images/centroSocial.png" alt="">
+        <img src="/images/centro-social.png" alt="">
     </footer>
 
 
@@ -146,7 +146,7 @@
                 <div id="opcoesMultipla" style="display:none; margin-top: 10px;">
                     <label>Opções:</label>
                     <div id="listaOpcoes">
-                        <!-- As opções vão aparecer aqui -->
+
                     </div>
                     <button type="button" onclick="adicionarOpcao()">Adicionar Opção</button>
                 </div>
@@ -190,14 +190,38 @@
             const listaOpcoes = document.getElementById('listaOpcoes');
             const index = listaOpcoes.children.length + 1;
 
+            // Cria container da linha (input + botão X)
+            const linha = document.createElement('div');
+            linha.className = 'linha-opcao';
+            linha.style.display = 'flex';
+            linha.style.alignItems = 'center';
+            linha.style.marginBottom = '5px';
+
+            // Cria o input
             const input = document.createElement('input');
             input.type = 'text';
             input.name = 'opcao' + index;
-            input.placeholder = 'Opção ' + index;
-            input.style.marginBottom = '5px';
+            input.placeholder = 'Nova opção ';
             input.required = true;
+            input.style.flex = '1';
 
-            listaOpcoes.appendChild(input);
+            // Cria o botão de remover
+            const botaoRemover = document.createElement('button');
+            botaoRemover.type = 'button';
+            botaoRemover.textContent = 'X';
+            botaoRemover.style.marginLeft = '0px';
+            botaoRemover.style.backgroundColor = '#00000000';
+            botaoRemover.style.color = 'grey';
+            botaoRemover.style.border = 'none';
+            botaoRemover.style.borderRadius = '4px';
+            botaoRemover.style.width = '2px';
+            botaoRemover.style.padding = '';
+            botaoRemover.onclick = () => linha.remove();
+
+            // Junta tudo
+            linha.appendChild(input);
+            linha.appendChild(botaoRemover);
+            listaOpcoes.appendChild(linha);
         }
 
         function abrirModalPergunta() {
@@ -212,7 +236,7 @@
             document.getElementById('modalPerguntaEditar').style.display = 'none';
             const formPerguntaEditar = document.getElementById('formPerguntaEditar');
             formPerguntaEditar.reset(); // Limpa o formulário
-            
+
         }
 
         // Exemplo de ação ao salvar a pergunta (você adapta conforme salvar no Firestore ou outro backend)

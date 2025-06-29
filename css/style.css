@@ -20,6 +20,31 @@ body.bodytela1 {
   text-align: center;
 }
 
+.manu-bloco-questionario {
+  position: absolute;
+  bottom: 440px;
+  right: -24px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: 85%;
+}
+.manu-interna-questionario {
+  position: absolute;
+  bottom: 264px;
+  right: -104px;
+  max-width: 200px;
+  width: 100%;
+  z-index: 10;
+  ;
+}
+
+
+
+
+
+
+
 .manu-bloco {
   position: absolute;
   bottom: 620px;

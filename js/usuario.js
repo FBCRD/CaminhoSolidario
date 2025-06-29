@@ -58,7 +58,6 @@ document.addEventListener("DOMContentLoaded", function () {
 function detectarPagina() {
     const url = window.location.pathname;
     let pagina = url.substring(url.lastIndexOf("/") + 1).split("?")[0];
-    pagina = pagina.toLowerCase(); // Ignora maiúsculas/minúsculas
     return pagina;
 }
 
@@ -84,7 +83,7 @@ async function cadastroUsuario() {
                     turma: turma,
                     idade: idade
                 });
-
+                // Armazena o ID do usuário no localStorage
                 localStorage.setItem("usuarioId", usuario.id);
                 console.log("Usuário adicionado com sucesso: ", usuario.id);
 
@@ -327,7 +326,7 @@ async function telaFinal() {
                 const receita = docs[randomIndex].data();
 
                 console.log("Receita aleatória encontrada:", receita);
-
+                //Mostra a receita na tela
                 document.getElementById("receita").innerHTML = `
             <h2>Receita: ${receita.titulo}</h2>
             <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
