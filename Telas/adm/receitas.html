@@ -338,7 +338,7 @@
             <button id="btnVoltar" class="btnVoltar" type="submit">Voltar</button>
         </div>
         <div>
-            <img class="logo" src="/imgs/logo.png" alt="">
+            <img class="logo" src="/images/logo.png" alt="">
         </div>
         <div>
             <button id="btnSair" class="btnSair">Sair</button>
@@ -347,11 +347,12 @@
 
     <main>
         <div class="header-content">
-            <div>
+            <div >
                 <h1>Receitas</h1>
                 <p>Receitas que o usuario recebe ao Selecionar sua fruta favorita</p>
             </div>
-
+            <button id="btnAdicionarReceita" style="float: right;">Adicionar Receita</button>
+            
         </div>
 
         <div id="cardsReceitas" class="grid">
@@ -364,37 +365,31 @@
         <div id="modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="fecharModal()">&times;</span>
-                <h2>Editar Receita</h2>
+                <h2>Adicionar Receita</h2>
                 <form id="formReceita">
-                    <!-- <label for="titulo">Título:</label><br>
-                    <input type="text" id="titulo" name="titulo" required>
-                    <br><br>
-                    <label for="descricao">Descrição:</label><br>
-                    <textarea id="descricao" name="descricao" rows="4" required></textarea><br>
-                    <label for="mododepreparo">Modo de preparo:</label><br>
-                    <textarea id="mododepreparo" name="mododepreparo" rows="4" required></textarea><br>
-                    <label for="ingredientes">Ingredientes:</label><br>
-                    <textarea id="ingredientes" name="ingredientes" rows="4" required></textarea>
-                    <br><br>
-                    <label for="image">Imagem:</label><br>
-                    <img src="" alt="">
-                    <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required>
-                    <br><br>
-                    <button type="submit">Salvar</button> -->
+                    
+                </form>
+            </div>
+        </div>
+        <div id="modalEditar" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="fecharModal()">&times;</span>
+                <h2>Editar Receita</h2>
+                <form id="formReceitaEditar">
+                    
                 </form>
             </div>
         </div>
 
 
     </main>
-    <script type="module" src="/back/functionsAdm.js"></script>
+    <script type="module" src="/js/adm.js"></script>
     <script>
 
 
         function fecharModal() {
             document.getElementById('modal').style.display = 'none';
-            
-
+            document.getElementById('modalEditar').style.display = 'none';
         }
     </script>
 </body>

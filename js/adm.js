@@ -1,8 +1,7 @@
 // Configuração do Firebase
 //Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, getDocs, deleteDoc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc , getDoc, doc, getDocs, deleteDoc, updateDoc, query, where, setDoc } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-auth.js";
 
 
@@ -26,48 +25,60 @@ const auth = getAuth(app);
 
 
 
-//Verifica a pagina atual
+
 //Verifica a pagina atual e conforme a pagina em que ele se encontra da inicio ao uso da função respectiva daquela pagina
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "telaloginadm.html") {
+    //Pagina de login do ADM
+    if (pagina === "tela-login-adm.html") {
+        console.log("Página de login do ADM");
         loginAdm();
     }
-    else if (pagina === "homeadm.html") {
-        HomeAdm();
-    } else if (pagina === "usuariosadm.html") {
-        console.log("telaQuestionario");
+    //Pagina inicial do ADM
+    else if (pagina === "home-adm.html") {
+        console.log("Página inicial do ADM");
+        homeAdm();
+    }
+    //Pagina onde o ADM ve os usuarios que responderam as perguntas
+    else if (pagina === "usuarios-adm.html") {
+        console.log("Página de usuários do ADM");
         // Verificando se o usuário está logado
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 console.log("Usuário logado:", user.email);
                 gerarUsuarios();
-                redRel();
 
             } else {
 
-                window.location.href = "TelaLoginAdm.html";
+                window.location.href = "tela-login-adm.html";
             }
         });
         btns();
     }
-    else if (pagina === "respostasadm.html") {
+    // Carrega as respostas do usuário selecionado
+    else if (pagina === "respostas-adm.html") {
         const urlParams = new URLSearchParams(window.location.search);
         const usuarioId = urlParams.get("id");
         console.log("ID do usuário:", usuarioId);
         carregarRespostas(usuarioId);
         btns();
     }
+    // Pagina onde o ADM pode adicionar perguntas
     else if (pagina === "perguntas.html") {
         listarPerguntas();
-        btns();
         adicionarPergunta();
+        btns();
 
-    } else if (pagina === "receitas.html") {
+    }
+    // Pagina onde o ADM pode adicionar e editar receitas
+    else if (pagina === "receitas.html") {
         console.log("Página de receitas");
         listarReceitas();
+        adicionarReceita();
         btns();
-    }else if (pagina === "relatorios.html") {
+    }
+    // Pagina onde o ADM pode gerar relatorios
+    else if (pagina === "relatorios.html") {
         gerarRelatorio();
         btns();
     }
@@ -115,7 +126,7 @@ function loginAdm() {
                 // Entrou
                 const user = userCredential.user;
                 console.log("Usuário logado com sucesso!", user);
-                window.location.href = "homeadm.html";
+                window.location.href = "home-adm.html";
             })
             .catch((error) => {
                 const errorMessage = error.message;
@@ -132,14 +143,14 @@ function loginAdm() {
 }
 
 //Usado apenas para dar função para os botões da Home Administradora
-function HomeAdm() {
+function homeAdm() { 
     document.getElementById("btnRespostas").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "usuariosADM.html";
+        window.location.href = "usuarios-adm.html";
     });
     document.getElementById("btnsair").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "TelaLoginAdm.html";
+        window.location.href = "tela-login-adm.html";
 
 
     });
@@ -155,9 +166,9 @@ function HomeAdm() {
 
 }
 
-//Função que se encontra onde o ADMIN ve os usuarios que responderam as perguntas e leva o ADMIN para o  as respostas do respectivo usuario
+//Função para ver as respostas do usuario selecionado, redireciona para a pagina de respostas do ADM
 window.verRespostas = function (usuarioId) {
-    window.location.href = `respostasADM.html?id=${usuarioId}`;
+    window.location.href = `respostas-adm.html?id=${usuarioId}`;
 };
 
 //Função que se encontra na tela onde o ADM pode ver os usuarios que responderam, serve para excluir o usuario
@@ -197,6 +208,10 @@ async function gerarUsuarios() {
             </td>
         </tr>`;
     });
+    document.getElementById("gerarRel").addEventListener("click", async function (event) {
+        event.preventDefault;
+        location.href = "relatorios.html";
+    })
 }
 
 //Faz a requisição conforme o usuario selecionado e depois mostra em html suas respectivas respostas
@@ -240,7 +255,7 @@ async function carregarRespostas(usuarioId) {
     }
 
 }
-
+//Excluir pergunta
 window.excluirPergunta = async function (perguntaId) {
     const perguntaRef = doc(db, "perguntas", perguntaId);
     deleteDoc(perguntaRef)
@@ -253,7 +268,7 @@ window.excluirPergunta = async function (perguntaId) {
         });
 
 }
-//Editar receita
+//Editar pergunta
 window.editarPergunta = async function (perguntaId) {
     const perguntaRef = doc(db, "perguntas", perguntaId);
     const perguntaSnap = await getDoc(perguntaRef);
@@ -319,10 +334,9 @@ window.editarPergunta = async function (perguntaId) {
     } catch (error) {
         console.error("Erro ao atualizar pergunta:", error);
     }
-
-
-
 }
+
+//Pagina de edição de perguntas
 function fecharModalPerguntaEditar() {
     document.getElementById('modalPerguntaEditar').style.display = 'none';
     document.getElementById('formPerguntaEditar').reset();
@@ -333,7 +347,7 @@ function fecharModalPerguntaEditar() {
     }, 1000);
 }
 
-
+ //Função para adicionar opções de múltipla escolha na edição de perguntas
 function adicionarOpcao() {
     const listaOpcoes = document.getElementById('listaOpcoeseditar');
     const index = listaOpcoes.children.length + 1;
@@ -347,11 +361,7 @@ function adicionarOpcao() {
 
     listaOpcoes.appendChild(input);
 }
-
-
-
-
-
+//Função para listar as perguntas, faz a requisição no banco e cria uma tabela em html mostrando os resultados
 async function listarPerguntas() {
     const perguntasSnap = await getDocs(collection(db, "perguntas"));
     perguntasSnap.forEach((doc) => {
@@ -373,7 +383,7 @@ async function listarPerguntas() {
 }
 
 
-
+//Função para adicionar perguntas, abre o modal e salva a pergunta no banco
 function adicionarPergunta() {
     document.getElementById('formPergunta').addEventListener('submit', async function (e) {
         e.preventDefault();
@@ -398,16 +408,17 @@ function adicionarPergunta() {
 }
 
 
-
-window.abrirModal = async function (receitaid) {
-    document.getElementById('modal').style.display = 'block';
-    const receitaRef = doc(db, "receitas", receitaid);
+//Fução para abrir o modal de editar pergunta
+window.abrirModal = async function (fruta, receitaid) {
+    console.log("Abrindo modal para editar receita:", receitaid, "da fruta:", fruta);
+    document.getElementById('modalEditar').style.display = 'block';
+    const receitaRef = doc(db, "receitas", fruta, "listadeReceitas", receitaid);
     const receitaSnap = await getDoc(receitaRef);
     if (receitaSnap.exists()) {
         const receita = receitaSnap.data();
 
 
-        document.getElementById("formReceita").innerHTML = `
+        document.getElementById("formReceitaEditar").innerHTML = `
         <label for="titulo">Título:</label><br>
         <input type="text" id="titulo" name="titulo" placeholder="titulo da receita" required value="${receita.titulo}">
         <br><br>
@@ -424,10 +435,19 @@ window.abrirModal = async function (receitaid) {
         <br><br>
         
         <button id="salvarReceita" type="submit">Salvar</button>
+        <button id="excluirReceita" type="submit">Excluir</button>
+
         `;
 
+        document.getElementById("excluirReceita").addEventListener("click", async function (event) {
+            event.preventDefault();
+            await deleteDoc(receitaRef);
+            console.log("Receita excluída com sucesso");
+            // Atualiza a página para refletir a exclusão
+            await renumerarReceitas(fruta);
+            location.reload();
 
-
+        });
 
         document.getElementById("salvarReceita").addEventListener("click", async function (event) {
             event.preventDefault();
@@ -440,7 +460,7 @@ window.abrirModal = async function (receitaid) {
             try {
                 await updateDoc(receitaRef, {
                     titulo: titulo,
-                    ingredientes: descricao,
+                    descricao: descricao,
                     preparo: mododepreparo,
                     ingredientes: ingredientes,
                     imagem: imglink
@@ -456,139 +476,200 @@ window.abrirModal = async function (receitaid) {
         console.log("Documento não encontrado!");
     }
 };
+
+//Função para listar as receitas, junto com botão de editar
 async function listarReceitas() {
     const receitasSnap = await getDocs(collection(db, "receitas"));
-    receitasSnap.forEach((doc) => {
-        const receita = doc.data();
-        console.log("Receita: ", receita.titulo);
-        document.getElementById("cardsReceitas").innerHTML += `
+    for (const receitaid of receitasSnap.docs) {
+        const listadereceitasRef = collection(db, "receitas", receitaid.id, "listadeReceitas");
+        const receitasSnap = await getDocs(listadereceitasRef);
+        receitasSnap.forEach((doc) => {
+            const receita = doc.data();
+            document.getElementById("cardsReceitas").innerHTML += `
         <div class="card">
         <img src="${receita.imagem}" alt="Imagem da Receita"
         class="card-image">
         <div class="card-title">${receita.titulo}</div>
         <div class="card-text">
-        survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem
+        ${receita.descricao}
         </div>
-        <button class="edit-button" onclick= "abrirModal('${doc.id}')" >Editar</button>
+        <button class="edit-button" onclick= "abrirModal('${receitaid.id}', '${doc.id}')" >Editar</button>
         </div>
         `;
-    });
+        })
+    }
 }
 
-//Funções para gerar relatorios
-
-
-async function redRel() {
-
-    document.getElementById("gerarRel").addEventListener("click", async function (event) {
-        event.preventDefault;
-        location.href = "relatorios.html";
-    })
-};
-
-// Coleta e filtra dados
+// Coleta e filtra dados, gerando um relatório em HTML e PDF
+// Função para gerar relatório de respostas de perguntas de múltipla escolha
 async function gerarRelatorio() {
     let dadosGlobais = {};
     const { jsPDF } = window.jspdf;
-    async function coletarDadosComFiltro(turmaFiltro, idadeMin){
+    async function coletarDadosComFiltro(turmaFiltro, idadeMin) {
 
-    
-    const perguntasRef = collection(db, "perguntas");
-    const perguntasSnap = await getDocs(query(perguntasRef, where("tipo", "==", "select")));
-    const mapa = {};
 
-    perguntasSnap.forEach(doc => {
-        const data = doc.data();
-        mapa[doc.id] = {
-            texto: data.texto,
-            opcoes: data.opcoes,
-            contagem: Object.fromEntries(data.opcoes.map(o => [o, 0]))
-        };
-    });
+        const perguntasRef = collection(db, "perguntas");
+        const perguntasSnap = await getDocs(query(perguntasRef, where("tipo", "==", "select")));
+        const mapa = {};
 
-    const usuariosSnap = await getDocs(collection(db, "usuarios"));
-    for (const userDoc of usuariosSnap.docs) {
-        const user = userDoc.data();
-
-        if ((turmaFiltro && user.turma !== turmaFiltro) ||
-            (idadeMin && parseInt(user.idade) < parseInt(idadeMin))) continue;
-
-        const respostasSnap = await getDocs(collection(db, `usuarios/${userDoc.id}/respostas`));
-        respostasSnap.forEach(respDoc => {
-            const { perguntaId, resposta } = respDoc.data();
-            const pergunta = mapa[perguntaId];
-            if (pergunta && pergunta.contagem.hasOwnProperty(resposta)) {
-                pergunta.contagem[resposta]++;
-            }
+        perguntasSnap.forEach(doc => {
+            const data = doc.data();
+            mapa[doc.id] = {
+                texto: data.texto,
+                opcoes: data.opcoes,
+                contagem: Object.fromEntries(data.opcoes.map(o => [o, 0]))
+            };
         });
-    }
 
-    return mapa;
-}
+        const usuariosSnap = await getDocs(collection(db, "usuarios"));
+        for (const userDoc of usuariosSnap.docs) {
+            const user = userDoc.data();
 
-// Exibe o relatório na tela
-document.getElementById("btnGerarRelatorio").addEventListener("click", async function (event) {
-    event.preventDefault();
-    const turma = document.getElementById("filtroTurma").value.trim();
-    const idade = document.getElementById("filtroIdade").value.trim();
+            if ((turmaFiltro && user.turma !== turmaFiltro) ||
+                (idadeMin && parseInt(user.idade) < parseInt(idadeMin))) continue;
 
-    const dados = await coletarDadosComFiltro(turma || null, idade || null);
-    dadosGlobais = dados;
-
-    const relatorioDiv = document.getElementById("relatorioHTML");
-    relatorioDiv.innerHTML = "";
-
-    for (const [id, pergunta] of Object.entries(dados)) {
-        const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
-        const bloco = document.createElement("div");
-        bloco.innerHTML = `<h3>${pergunta.texto}</h3>`;
-        const ul = document.createElement("ul");
-
-        for (const [opcao, count] of Object.entries(pergunta.contagem)) {
-            const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
-            const li = document.createElement("li");
-            li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
-            ul.appendChild(li);
+            const respostasSnap = await getDocs(collection(db, `usuarios/${userDoc.id}/respostas`));
+            respostasSnap.forEach(respDoc => {
+                const { perguntaId, resposta } = respDoc.data();
+                const pergunta = mapa[perguntaId];
+                if (pergunta && pergunta.contagem.hasOwnProperty(resposta)) {
+                    pergunta.contagem[resposta]++;
+                }
+            });
         }
 
-        bloco.appendChild(ul);
-        relatorioDiv.appendChild(bloco);
+        return mapa;
     }
-},
-);
 
-// Gera e baixa o PDF
-document.getElementById("btnGerarPDF").addEventListener("click", function (event) {
-    event.preventDefault();
-    const doc = new jsPDF();
-    let y = 20;
+    // Exibe o relatório na tela
+    document.getElementById("btnGerarRelatorio").addEventListener("click", async function (event) {
+        event.preventDefault();
+        const turma = document.getElementById("filtroTurma").value.trim();
+        const idade = document.getElementById("filtroIdade").value.trim();
 
-    doc.setFontSize(16);
-    doc.text("Relatório de Respostas - Perguntas de múltipla escolha", 20, y);
-    y += 10;
-    doc.setFontSize(12);
+        const dados = await coletarDadosComFiltro(turma || null, idade || null);
+        dadosGlobais = dados;
 
-    for (const [id, pergunta] of Object.entries(dadosGlobais)) {
-        const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+        const relatorioDiv = document.getElementById("relatorioHTML");
+        relatorioDiv.innerHTML = "";
+
+        for (const [id, pergunta] of Object.entries(dados)) {
+            const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+            const bloco = document.createElement("div");
+            bloco.innerHTML = `<h3>${pergunta.texto}</h3>`;
+            const ul = document.createElement("ul");
+
+            for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                const li = document.createElement("li");
+                li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
+                ul.appendChild(li);
+            }
+
+            bloco.appendChild(ul);
+            relatorioDiv.appendChild(bloco);
+        }
+    },
+    );
+
+    // Gera e baixa o PDF
+    document.getElementById("btnGerarPDF").addEventListener("click", function (event) {
+        event.preventDefault();
+        const doc = new jsPDF();
+        let y = 20;
+
+        doc.setFontSize(16);
+        doc.text("Relatório de Respostas - Perguntas de múltipla escolha", 20, y);
         y += 10;
-        if (y > 270) { doc.addPage(); y = 20; }
+        doc.setFontSize(11);
 
-        doc.setFont(undefined, "bold");
-        doc.text(pergunta.texto, 20, y);
-        doc.setFont(undefined, "normal");
-        y += 8;
-
-        for (const [opcao, count] of Object.entries(pergunta.contagem)) {
-            const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
-            doc.text(`- ${opcao}: ${count} resposta(s) (${porcentagem}%)`, 25, y);
-            y += 7;
+        for (const [id, pergunta] of Object.entries(dadosGlobais)) {
+            const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+            y += 10;
             if (y > 270) { doc.addPage(); y = 20; }
+
+            doc.setFont(undefined, "bold");
+            doc.text(pergunta.texto, 20, y);
+            doc.setFont(undefined, "normal");
+            y += 8;
+
+            for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                doc.text(`- ${opcao}: ${count} resposta(s) (${porcentagem}%)`, 25, y);
+                y += 7;
+                if (y > 270) { doc.addPage(); y = 20; }
+            }
         }
+
+        doc.save("relatorio_selects.pdf");
+
     }
-
-    doc.save("relatorio_selects.pdf");
-
+    );
 }
-);
+//Função para adicionar receita
+async function adicionarReceita() {
+    const perguntaRef = await getDocs(collection(db, "receitas"));
+    document.getElementById("btnAdicionarReceita").addEventListener("click", function () {
+        document.getElementById("modal").style.display = "block";
+        document.getElementById("formReceita").innerHTML = `
+            <label for="fruta">Fruta:</label><br>
+            <select name="fruta" id="fruta" required>
+                ${perguntaRef.docs.map(doc => `<option value="${doc.id}">${doc.id}</option>`).join('')}
+            </select>
+            <label for="titulo">Título:</label><br>
+            <input type="text" id="titulo" name="titulo" placeholder="titulo da receita" required>
+            <br><br>
+            <label for="descricao">Descrição:</label><br>
+            <textarea id="descricao" name="descricao" rows="4" required></textarea><br>
+            <label for="mododepreparo">Modo de preparo:</label><br>
+            <textarea id="mododepreparo" name="mododepreparo" rows="4" required></textarea><br>
+            <label for="ingredientes">Ingredientes:</label><br>
+            <textarea id="ingredientes" name="ingredientes" rows="4" required></textarea>
+            <br><br>
+            <label for="image">Imagem:</label><br>
+            <input type="text" id="textImage" name="textImage" placeholder="URL da imagem" required>
+            <br><br>
+            
+            <button id="salvarReceita" type="submit">Salvar</button>`;
+        document.getElementById("salvarReceita").addEventListener("click", async function (event) {
+            event.preventDefault();
+
+            const titulo = document.getElementById("titulo").value;
+            const descricao = document.getElementById("descricao").value;
+            const mododepreparo = document.getElementById("mododepreparo").value;
+            const ingredientes = document.getElementById("ingredientes").value;
+            const imglink = document.getElementById("textImage").value;
+            const fruta = document.getElementById("fruta").value;
+
+            const receitaDocRef = doc(db, "receitas", fruta, "listadeReceitas", titulo); // usa o título como ID
+
+            try {
+                const docSnap = await getDoc(receitaDocRef);
+
+                if (docSnap.exists()) {
+                    alert("Já existe uma receita com esse título!");
+                    return; // cancela o restante da execução
+                }
+
+                await setDoc(receitaDocRef, {
+                    titulo: titulo,
+                    descricao: descricao,
+                    preparo: mododepreparo,
+                    ingredientes: ingredientes,
+                    imagem: imglink
+                });
+
+                console.log("Documento adicionado com sucesso");
+                location.reload();
+
+            } catch (error) {
+                console.error("Erro ao adicionar o documento", error);
+            }
+
+
+        }
+        );
+    }
+    );
 }
 

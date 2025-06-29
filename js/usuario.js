@@ -1,11 +1,7 @@
 // Configuração do Firebase
 //Importações de bibliotecas do firebase que foram utilizadas
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, query } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-import { getDoc, doc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
-
-
-
+import { getFirestore, collection, addDoc, query, getDoc, doc, getDocs, where } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 //Codigo gerado pelo Firebase, cada projeto gera um codigo especifico
 const firebaseConfig = {
     apiKey: "AIzaSyCbcrEzEclTnwYbikez1umD3AI8R1dG5Jc",
@@ -27,24 +23,30 @@ const db = getFirestore(app);
 //Verifica a pagina atual e conforme a pagina em que ele se encontra da inicio ao uso da função respectiva daquela pagina
 document.addEventListener("DOMContentLoaded", function () {
     const pagina = detectarPagina();
-    if (pagina === "telacadastro.html") {
+    //Tela de Cadastro do Usuario
+    if (pagina === "tela-cadastro.html") {
         cadastroUsuario();
         redlogin();
     }
-    else if (pagina === "home.html") {
-        iniciarHome();
-    } else if (pagina === "telaquestionario.html") {
-        console.log("telaQuestionario");
-
-        TelaQuestionario();
-    }
-    else if (pagina === "teladefinalizacao.html") {
-        console.log("telaFinalizacao");
-        telaFinal();
-    } else if (pagina === "loginusuario.html") {
+    //Tela de Login do Usuario
+    else if (pagina === "login-usuario.html") {
         console.log("loginUsuario");
         loginUsuario();
         redCad();
+    }
+    //Tela Principal do Usuario
+    else if (pagina === "home.html") {
+        iniciarHome();
+    }
+    //Tela de Questionario do Usuario 
+    else if (pagina === "tela-questionario.html") {
+        console.log("telaQuestionario");
+        TelaQuestionario();
+    }
+    //Tela de Finalização do Questionario
+    else if (pagina === "tela-finalizacao.html") {
+        console.log("telaFinalizacao");
+        telaFinal();
     }
     else {
         console.log("Página não encontrada!" + pagina);
@@ -59,10 +61,11 @@ function detectarPagina() {
     pagina = pagina.toLowerCase(); // Ignora maiúsculas/minúsculas
     return pagina;
 }
+
 //Função cadastro de usuario
 async function cadastroUsuario() {
     const form = document.getElementById("formUsuario");
-    
+
     //Fazer validação dos campos
     if (form) {
         form.addEventListener("submit", async function (event) {
@@ -91,7 +94,14 @@ async function cadastroUsuario() {
             }
         });
     }
-    
+
+}
+//Função para redirecionar para a tela de login
+function redlogin() {
+    document.getElementById("redlogin").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "loginUsuario.html";
+    });
 }
 
 //Fazer Login do usuário
@@ -120,18 +130,14 @@ async function loginUsuario() {
             window.alert("Usuário ou senha incorretos!");
             location.reload();
         }
-
-
-
-
-
-
-
     })
-
-
-
-
+}
+//Função para redirecionar para a tela de cadastro
+function redCad() {
+    document.getElementById("redCad").addEventListener("click", async function (event) {
+        event.preventDefault();
+        window.location.href = "tela-cadastro.html";
+    });
 }
 
 //Função para iniciar a home com o nome do usuário, função de sair e ir para o questionário
@@ -142,17 +148,12 @@ async function iniciarHome() {
     // Verifica se o usuário está logado
     document.getElementById("sair").addEventListener("click", async function (event) {
         event.preventDefault();
-
-
-        window.location.href = "telaCadastro.html";
+        window.location.href = "tela-cadastro.html";
         console.log("Usuário deslogado com sucesso!");
-
-
     });
     document.getElementById("btnResQuest").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "telaQuestionario.html";
-
+        window.location.href = "tela-questionario.html";
     });
     if (docSnap.exists()) {
         const usuario = docSnap.data();
@@ -160,21 +161,19 @@ async function iniciarHome() {
     } else {
         alert("Usuário não encontrado!");
         localStorage.removeItem("usuarioId");
-        window.location.href = "telaCadastro.html";
-
+        window.location.href = "tela-cadastro.html";
     }
 }
 
-
+// Função para a tela de questionário
+// Esta função exibe as perguntas e curiosidades, permite que o usuário responda e salva
 async function TelaQuestionario() {
     const usuarioId = localStorage.getItem("usuarioId");
     const form = document.getElementById("formQuestionario");
-
     if (!usuarioId) {
         alert("Usuário não encontrado!");
         return;
     }
-
     const perguntasSnap = await getDocs(collection(db, "perguntas"));
     const curiosidadesSnap = await getDocs(collection(db, "curiosidades"));
     const respostasSnap = await getDocs(collection(db, "usuarios", usuarioId, "respostas"));
@@ -182,22 +181,19 @@ async function TelaQuestionario() {
     const perguntas = perguntasSnap.docs;
     const curiosidades = curiosidadesSnap.docs;
     const respostas = respostasSnap.docs;
-
     // Criar um Set com os IDs das perguntas já respondidas
     const perguntasRespondidas = new Set(respostas.map(doc => doc.data().perguntaId));
-
     // Encontrar o índice da próxima pergunta não respondida
     let indicePergunta = perguntas.findIndex(perguntaDoc => !perguntasRespondidas.has(perguntaDoc.id));
-
     // Se respondeu todas, mandar direto pra tela final
     if (indicePergunta === -1) {
-        window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+        window.location.href = "/Telas/usuario/tela-finalizacao.html";
         return;
     }
-
+    // Essa função exibe a pergunta atual e curiosidade
     function mostrarPergunta() {
         if (indicePergunta >= perguntas.length) {
-            window.location.href = "/Telas/usuario/teladeFinalizacao.html";
+            window.location.href = "/Telas/usuario/tela-finalizacao.html";
             return;
         }
 
@@ -211,7 +207,7 @@ async function TelaQuestionario() {
         if (campoAntigo) campoAntigo.remove();
 
         let novoCampo;
-
+        // Verifica o tipo da pergunta e cria o campo de resposta correspondente
         if (pergunta.tipo === "select") {
             novoCampo = document.createElement("select");
             novoCampo.id = "resposta";
@@ -275,14 +271,11 @@ async function TelaQuestionario() {
         }
     });
 
-
-
-
     mostrarPergunta();  // Exibir a primeira pergunta ao carregar a tela
 
     document.getElementById("btnSair").addEventListener("click", () => {
         localStorage.removeItem("usuarioId");
-        window.location.href = "telaCadastro.html";
+        window.location.href = "tela-cadastro.html";
     });
 
     document.getElementById("btnVoltar").addEventListener("click", () => {
@@ -291,12 +284,13 @@ async function TelaQuestionario() {
 }
 
 
-//função do botão de sair, da tela Final
+//função para a tela de finalização do questionário
+// Esta função exibe uma receita aleatória baseada na resposta do usuário sobre frutas
 async function telaFinal() {
     document.getElementById("btnSair").addEventListener("click", async function (event) {
         event.preventDefault();
         localStorage.removeItem("usuarioId");
-        window.location.href = "telaCadastro.html";
+        window.location.href = "tela-cadastro.html";
         console.log("Usuário deslogado com sucesso!");
     });
 
@@ -321,38 +315,40 @@ async function telaFinal() {
         const fruta = data.resposta;
 
         if (fruta) {
-            const receitaRef = doc(db, "receitas", fruta);
-            const receitaSnap = await getDoc(receitaRef);
+            const receitaRef = collection(db, "receitas", fruta, "listadeReceitas");
+            const receitaSnap = await getDocs(receitaRef);
 
-            if (receitaSnap.exists()) {
-                const receita = receitaSnap.data();
+            if (!receitaSnap.empty) {
+                // Pegamos todos os documentos em uma array
+                const docs = receitaSnap.docs;
+                // Escolhe um índice aleatório
+                const randomIndex = Math.floor(Math.random() * docs.length);
+                // Pega uma receita aleatória
+                const receita = docs[randomIndex].data();
 
-                document.getElementById("receita").innerHTML += `
-                    <h2>Receita: ${receita.titulo}</h2>
-                    <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
-                    <br><p><strong>Ingredientes:</strong><br>${receita.ingredientes}</p><br>
-                    <p><strong>Modo de preparo:</strong><br>${receita.preparo}</p>
-                `;
+                console.log("Receita aleatória encontrada:", receita);
+
+                document.getElementById("receita").innerHTML = `
+            <h2>Receita: ${receita.titulo}</h2>
+            <img src="${receita.imagem}" alt="Imagem de ${receita.titulo}" style="max-width: 300px; display: block; margin: 0 auto;">
+            <br><p><strong>Ingredientes:</strong><br>${receita.ingredientes}</p><br>
+            <p><strong>Modo de preparo:</strong><br>${receita.preparo}</p>
+        `;
             } else {
-                document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
+                document.getElementById("receita").innerHTML = `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
             }
         } else {
-            document.getElementById("receita").innerHTML += `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
+            document.getElementById("receita").innerHTML = `<p>Desculpe, não temos uma receita para essa fruta ainda.</p>`;
         }
-    });
+    })
+
+
+
+
+
+
 }
-function redlogin() {
-    document.getElementById("redlogin").addEventListener("click", async function (event) {
-        event.preventDefault();
-        window.location.href = "loginUsuario.html";
-    });
-}
-function redCad() {
-    document.getElementById("redCad").addEventListener("click", async function (event) {
-        event.preventDefault();
-        window.location.href = "telaCadastro.html";
-    });
-}
+
 
 
 
