@@ -203,7 +203,7 @@ async function gerarUsuarios() {
                     Ver respostas
                 </button>
                 <button class="btn" onclick = "excluir('${doc.id}')" >
-                    Excluir Usuario
+                    Excluir Usuário
                 </button>
             </td>
         </tr>`;
