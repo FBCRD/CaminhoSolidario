@@ -259,16 +259,20 @@ async function carregarRespostas(usuarioId) {
 }
 //Excluir pergunta
 window.excluirPergunta = async function (perguntaId) {
-    const perguntaRef = doc(db, "perguntas", perguntaId);
-    deleteDoc(perguntaRef)
-        .then(() => {
-            console.log("Pergunta excluída com sucesso!");
-            location.reload(); // Atualiza a página para refletir a exclusão
-        })
-        .catch((error) => {
-            console.error("Erro ao excluir pergunta: ", error);
-        });
-
+    if (perguntaId == "pergunta2") {
+        alert("Essa pergunta não pode ser excluída, pois é uma pergunta padrão do sistema.");
+        return; // Não permite a exclusão da pergunta padrão
+    } else {
+        const perguntaRef = doc(db, "perguntas", perguntaId);
+        deleteDoc(perguntaRef)
+            .then(() => {
+                console.log("Pergunta excluída com sucesso!");
+                location.reload(); // Atualiza a página para refletir a exclusão
+            })
+            .catch((error) => {
+                console.error("Erro ao excluir pergunta: ", error);
+            });
+    }
 }
 //Editar pergunta
 window.editarPergunta = async function (perguntaId) {
@@ -446,7 +450,7 @@ function adicionarPergunta() {
 }
 
 
-//Fução para abrir o modal de editar pergunta
+//Fução para abrir o modal de receita
 window.abrirModal = async function (fruta, receitaid) {
     console.log("Abrindo modal para editar receita:", receitaid, "da fruta:", fruta);
     document.getElementById('modalEditar').style.display = 'block';
