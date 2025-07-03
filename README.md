@@ -16,6 +16,4 @@ Contribuidores Fabricio Rodrigues
 
 Contato E-mail Academico: fabricio-rodrigues@acad-ufsm.br
 
-Próximos Passos:
 
-função para o administrador gerar relatorios elaborados e poder editar perguntas
