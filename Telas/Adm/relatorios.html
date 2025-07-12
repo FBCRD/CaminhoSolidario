@@ -38,7 +38,7 @@
 
         }
 
-        
+
 
         button {
             background-color: black;
@@ -89,6 +89,12 @@
         <input type="text" id="filtroTurma" placeholder="Ex: 203">
         <label>Idade mínima: </label>
         <input class="input-border" type="number" id="filtroIdade" placeholder="Ex: 10">
+        <label for="filtroPergunta">Tipo de pergunta:</label>
+        <select id="filtroPergunta">
+            <option value="todas">Todas</option>
+            <option value="select">Selecionáveis (Select)</option>
+            <option value="texto">Texto</option>
+        </select>
         <button id="btnGerarRelatorio">Gerar Relatório</button>
         <div id="relatorioHTML" class="relatorio-section"></div>
         <button id="btnGerarPDF">Baixar PDF</button>

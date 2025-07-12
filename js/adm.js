@@ -188,7 +188,6 @@ window.excluir = async function (usuarioId) {
     console.log("Documento deletado");
 };
 
-
 //Função usada para gerar os usuarios, faz a requisição pro banco e cria uma tabela em html mostrando os resultados
 async function gerarUsuarios() {
     const usuariosSnapshot = await getDocs(collection(db, "usuarios"));//Recupera todos os usuarios do banco
@@ -544,128 +543,192 @@ async function listarReceitas() {
     }
 }
 
+
 // Coleta e filtra dados, gerando um relatório em HTML e PDF
 // Função para gerar relatório de respostas de perguntas de múltipla escolha
+// Função principal que será chamada para gerar o relatório
 async function gerarRelatorio() {
+    // Objeto para armazenar os dados coletados globalmente
     let dadosGlobais = {};
     const { jsPDF } = window.jspdf;
-    async function coletarDadosComFiltro(turmaFiltro, idadeMin) {
 
+    async function coletarDadosComFiltro(turmaFiltro, idadeMin, tipoPerguntaFiltro) {
+        const perguntasRef = collection(db, "perguntas"); 
+        let perguntasQuery = perguntasRef;
 
-        const perguntasRef = collection(db, "perguntas");
-        const perguntasSnap = await getDocs(query(perguntasRef, where("tipo", "==", "select")));
+        // Aplica filtro de tipo de pergunta
+        if (tipoPerguntaFiltro !== "todas") {
+            perguntasQuery = query(perguntasRef, where("tipo", "==", tipoPerguntaFiltro));
+        }
+
+        // Obtém todas as perguntas filtradas
+        const perguntasSnap = await getDocs(perguntasQuery);
         const mapa = {};
 
         perguntasSnap.forEach(doc => {
             const data = doc.data();
             mapa[doc.id] = {
                 texto: data.texto,
-                opcoes: data.opcoes,
-                contagem: Object.fromEntries(data.opcoes.map(o => [o, 0]))
+                tipo: data.tipo,
+                opcoes: data.opcoes || [],
+                contagem: data.tipo === "select" ? Object.fromEntries((data.opcoes || []).map(o => [o, 0])) : {},
+                respostasTexto: [] // Armazena respostas escritas (texto)
             };
         });
 
+        // Coleta todos os usuários
         const usuariosSnap = await getDocs(collection(db, "usuarios"));
         for (const userDoc of usuariosSnap.docs) {
             const user = userDoc.data();
 
+            // Aplica filtros de turma e idade
             if ((turmaFiltro && user.turma !== turmaFiltro) ||
                 (idadeMin && parseInt(user.idade) < parseInt(idadeMin))) continue;
 
+            // Coleta respostas desse usuário
             const respostasSnap = await getDocs(collection(db, `usuarios/${userDoc.id}/respostas`));
             respostasSnap.forEach(respDoc => {
                 const { perguntaId, resposta } = respDoc.data();
                 const pergunta = mapa[perguntaId];
-                if (pergunta && pergunta.contagem.hasOwnProperty(resposta)) {
+
+                if (!pergunta) return;
+
+                // Para perguntas do tipo "select", adiciona na contagem
+                if (pergunta.tipo === "select" && pergunta.contagem.hasOwnProperty(resposta)) {
                     pergunta.contagem[resposta]++;
+                }
+                // Para perguntas de texto, armazena o nome do usuário e resposta
+                else if (pergunta.tipo === "texto") {
+                    pergunta.respostasTexto.push({
+                        nome: user.nome || "Anônimo",
+                        resposta: resposta
+                    });
                 }
             });
         }
 
-        return mapa;
+        return mapa; // Retorna o mapa com dados organizados
     }
 
-    // Exibe o relatório na tela
+    // Gera o relatório em HTML
     document.getElementById("btnGerarRelatorio").addEventListener("click", async function (event) {
         event.preventDefault();
+
+
+        const filtroPergunta = document.getElementById("filtroPergunta").value;
         const turma = document.getElementById("filtroTurma").value.trim();
         const idade = document.getElementById("filtroIdade").value.trim();
 
-        const dados = await coletarDadosComFiltro(turma || null, idade || null);
-        dadosGlobais = dados;
+        // Coleta os dados com os  filtros selecionados, se os filtros turma e idade não forem preenchidos, ele pega todos os dados
+        const dados = await coletarDadosComFiltro(turma || null, idade || null, filtroPergunta);
+        dadosGlobais = dados; // Armazena os dados globalmente
 
+        // Limpa conteúdo anterior da div de relatório
         const relatorioDiv = document.getElementById("relatorioHTML");
         relatorioDiv.innerHTML = "";
 
+        // Para cada pergunta coletada
         for (const [id, pergunta] of Object.entries(dados)) {
-            const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
             const bloco = document.createElement("div");
             bloco.innerHTML = `<h3>${pergunta.texto}</h3>`;
-            const ul = document.createElement("ul");
 
-            for (const [opcao, count] of Object.entries(pergunta.contagem)) {
-                if (count > 0) {
-                    const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
-                    const li = document.createElement("li");
-                    li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
-                    ul.appendChild(li);
+            // Mostra contagem das respostas (select)
+            if (pergunta.tipo === "select") {
+                const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+                const ul = document.createElement("ul");
+
+                for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                    if (count > 0) {
+                        const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                        const li = document.createElement("li");
+                        li.textContent = `${opcao}: ${count} resposta(s) (${porcentagem}%)`;
+                        ul.appendChild(li);
+                    }
                 }
+
+                if (ul.children.length > 0) bloco.appendChild(ul);
             }
 
-            bloco.appendChild(ul);
-            relatorioDiv.appendChild(bloco);
-        }
-    },
-    );
+            // Mostra respostas de texto
+            if (pergunta.tipo === "texto" && pergunta.respostasTexto.length > 0) {
+                const lista = document.createElement("ul");
+                pergunta.respostasTexto.forEach(r => {
+                    const li = document.createElement("li");
+                    li.textContent = `${r.nome}: ${r.resposta}`;
+                    lista.appendChild(li);
+                });
+                bloco.appendChild(lista);
+            }
 
-    // Gera e baixa o PDF
+            relatorioDiv.appendChild(bloco); // Adiciona o  bloco criado à div
+        }
+    });
+
+    // Gerar PDF a partir dos dados globais que foram coletados
     document.getElementById("btnGerarPDF").addEventListener("click", function (event) {
         event.preventDefault();
-        const doc = new jsPDF();
+
+        const doc = new jsPDF(); // Cria novo documento PDF
         let y = 20;
         let perguntaNum = 1;
 
-        // Título principal
+        // Título do PDF
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
         doc.text("Relatório de Respostas", 105, y, { align: "center" });
 
         y += 12;
-
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
         doc.setTextColor(0);
 
+        // Para cada pergunta no relatório
         for (const [id, pergunta] of Object.entries(dadosGlobais)) {
-            const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
-
+            // Verifica se é necessário adicionar nova página
             if (y > 250) { doc.addPage(); y = 20; }
 
-            // Caixa da pergunta
-            doc.setFillColor(230, 230, 250); // Cor lavanda clara
-            doc.rect(15, y - 5, 180, 8, "F"); // fundo colorido da pergunta
+            // Adiciona título da pergunta com fundo
+            doc.setFillColor(230, 230, 250); // cor lavanda
+            doc.rect(15, y - 5, 180, 8, "F"); // fundo da pergunta
             doc.setFont("helvetica", "bold");
             doc.text(`${perguntaNum}. ${pergunta.texto}`, 20, y);
 
             y += 10;
-
             doc.setFont("helvetica", "normal");
 
-            for (const [opcao, count] of Object.entries(pergunta.contagem)) {
-                if (count > 0) {
-                    const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
-                    doc.text(`- ${opcao}: ${count} resposta(s) (${porcentagem}%)`, 25, y);
-                    y += 7;
+            // Respostas do tipo "select"
+            if (pergunta.tipo === "select") {
+                const total = Object.values(pergunta.contagem).reduce((a, b) => a + b, 0);
+
+                for (const [opcao, count] of Object.entries(pergunta.contagem)) {
+                    if (count > 0) {
+                        const porcentagem = total > 0 ? ((count / total) * 100).toFixed(1) : "0.0";
+                        const linha = `- ${opcao}: ${count} resposta(s) (${porcentagem}%)`;
+                        doc.text(linha, 25, y);
+                        y += 7;
+
+                        if (y > 280) { doc.addPage(); y = 20; }
+                    }
+                }
+            }
+            // Respostas do tipo "texto"
+            else if (pergunta.tipo === "texto" && pergunta.respostasTexto?.length > 0) {
+                for (const r of pergunta.respostasTexto) {
+                    const linha = `- ${r.nome || "Anônimo"}: ${r.resposta}`;
+                    const splitText = doc.splitTextToSize(linha, 170); // Quebra de linha automática
+                    doc.text(splitText, 25, y);
+                    y += (splitText.length * 7);
+
+                    if (y > 280) { doc.addPage(); y = 20; }
                 }
             }
 
-            y += 5; // espaço extra entre perguntas
+            y += 5;
             perguntaNum++;
         }
 
-        doc.save("relatorio_selects.pdf");
+        doc.save("relatorio_respostas.pdf");
     });
-
 }
 //Função para adicionar receita
 async function adicionarReceita() {
