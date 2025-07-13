@@ -99,7 +99,7 @@ async function cadastroUsuario() {
 function redlogin() {
     document.getElementById("redlogin").addEventListener("click", async function (event) {
         event.preventDefault();
-        window.location.href = "loginUsuario.html";
+        window.location.href = "login-usuario.html";
     });
 }
 
