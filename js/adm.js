@@ -544,7 +544,7 @@ async function listarReceitas() {
 }
 
 
-// Coleta e filtra dados, gerando um relatório em HTML e PDF
+// Coleta e filtra dados, gerando um relatório em HTML e PDF 
 // Função para gerar relatório de respostas de perguntas de múltipla escolha
 // Função principal que será chamada para gerar o relatório
 async function gerarRelatorio() {
@@ -645,7 +645,6 @@ async function gerarRelatorio() {
                         ul.appendChild(li);
                     }
                 }
-
                 if (ul.children.length > 0) bloco.appendChild(ul);
             }
 
